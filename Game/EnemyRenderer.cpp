@@ -1,0 +1,806 @@
+#include "stdafx.h"
+#include "EnemyRenderer.h"
+#include "Enemy.h"
+
+#include <cmath>
+
+
+namespace
+{
+    const float PI =
+        3.14159265f;
+
+
+    // ============================================
+    // Twin
+    // ============================================
+
+    const float TWIN_BARREL_OFFSET =
+        11.0f;
+
+
+    // ============================================
+    // 方向から砲身回転を作る
+    //
+    // TankBarrelの正面は-Z。
+    // ============================================
+
+    Quaternion CreateBarrelRotation(
+        const Vector3& originalDirection
+    )
+    {
+        Vector3 direction =
+            originalDirection;
+
+
+        direction.y =
+            0.0f;
+
+
+        const float lengthSquared =
+            direction.x *
+            direction.x +
+            direction.z *
+            direction.z;
+
+
+        if (lengthSquared <=
+            0.0001f)
+        {
+            direction =
+                Vector3(
+                    0.0f,
+                    0.0f,
+                    1.0f
+                );
+        }
+        else
+        {
+            direction.Normalize();
+        }
+
+
+        const Vector3 modelForward(
+            0.0f,
+            0.0f,
+            -1.0f
+        );
+
+
+        Vector3 rotationAxis;
+
+
+        rotationAxis.Cross(
+            modelForward,
+            direction
+        );
+
+
+        const float axisLength =
+            std::sqrt(
+                rotationAxis.x *
+                rotationAxis.x +
+                rotationAxis.y *
+                rotationAxis.y +
+                rotationAxis.z *
+                rotationAxis.z
+            );
+
+
+        Quaternion rotation =
+            Quaternion::Identity;
+
+
+        if (axisLength >
+            0.0001f)
+        {
+            rotationAxis.Normalize();
+
+
+            const float angle =
+                std::atan2(
+                    axisLength,
+                    -direction.z
+                );
+
+
+            rotation.SetRotationDeg(
+                rotationAxis,
+                angle *
+                180.0f /
+                PI
+            );
+        }
+        else if (
+            direction.z >
+            0.0f)
+        {
+            rotation.SetRotationDeg(
+                Vector3::AxisY,
+                180.0f
+            );
+        }
+
+
+        return rotation;
+    }
+}
+
+
+// ============================================================
+// Start
+// ============================================================
+
+bool EnemyRenderer::Start()
+{
+    // ============================================
+    // 赤い敵本体
+    // ============================================
+
+    m_bodyRender.Init(
+        "Assets/modelData/tank/EnemyBody.tkm",
+        nullptr,
+        0,
+        EnModelUpAxis::enModelUpAxisZ,
+        true,
+        MAX_INSTANCE,
+        false
+    );
+
+
+    // ============================================
+    // 通常砲身1
+    // ============================================
+
+    m_barrelRender1.Init(
+        "Assets/modelData/tank/TankBarrel.tkm",
+        nullptr,
+        0,
+        EnModelUpAxis::enModelUpAxisZ,
+        true,
+        MAX_INSTANCE,
+        false
+    );
+
+
+    // ============================================
+    // 通常砲身2
+    // ============================================
+
+    m_barrelRender2.Init(
+        "Assets/modelData/tank/TankBarrel.tkm",
+        nullptr,
+        0,
+        EnModelUpAxis::enModelUpAxisZ,
+        true,
+        MAX_INSTANCE,
+        false
+    );
+
+
+    // ============================================
+    // Machine Gun専用台形砲身
+    // ============================================
+
+    m_machineGunBarrelRender.Init(
+        "Assets/modelData/tank/TankMachineGunBarrel.tkm",
+        nullptr,
+        0,
+        EnModelUpAxis::enModelUpAxisZ,
+        true,
+        MAX_INSTANCE,
+        false
+    );
+
+
+    // ============================================
+    // Smasher外装
+    // ============================================
+
+    m_smasherShellRender.Init(
+        "Assets/modelData/tank/TankSmasherShell.tkm",
+        nullptr,
+        0,
+        EnModelUpAxis::enModelUpAxisZ,
+        true,
+        MAX_INSTANCE,
+        false
+    );
+
+
+    // ============================================
+    // 最初は全部非表示
+    // ============================================
+
+    for (int i = 0;
+        i < MAX_INSTANCE;
+        ++i)
+    {
+        m_bodyRender.RemoveInstance(
+            i
+        );
+
+
+        m_barrelRender1.RemoveInstance(
+            i
+        );
+
+
+        m_barrelRender2.RemoveInstance(
+            i
+        );
+
+
+        m_machineGunBarrelRender.RemoveInstance(
+            i
+        );
+
+
+        m_smasherShellRender.RemoveInstance(
+            i
+        );
+    }
+
+
+    return true;
+}
+
+
+// ============================================================
+// Render
+// ============================================================
+
+void EnemyRenderer::Render(
+    RenderContext& rc)
+{
+    // ============================================
+    // Smasher外装回転
+    // ============================================
+
+    m_smasherRotationDeg +=
+        90.0f *
+        g_gameTime
+        ->GetFrameDeltaTime();
+
+
+    if (m_smasherRotationDeg >=
+        360.0f)
+    {
+        m_smasherRotationDeg -=
+            360.0f;
+    }
+
+
+    int instanceNo =
+        0;
+
+
+    QueryGOs<Enemy>(
+        "enemy",
+        [&](Enemy* enemy)
+        {
+            if (enemy ==
+                nullptr)
+            {
+                return true;
+            }
+
+
+            if (enemy
+                ->IsDead())
+            {
+                return true;
+            }
+
+
+            if (instanceNo >=
+                MAX_INSTANCE)
+            {
+                return false;
+            }
+
+
+            // ====================================
+            // 前フレームの同スロットを一旦消す
+            //
+            // 進化クラスが違う敵が同じslotに
+            // 入っても前の砲身が残らないようにする。
+            // ====================================
+
+            m_barrelRender1.RemoveInstance(
+                instanceNo
+            );
+
+
+            m_barrelRender2.RemoveInstance(
+                instanceNo
+            );
+
+
+            m_machineGunBarrelRender.RemoveInstance(
+                instanceNo
+            );
+
+
+            m_smasherShellRender.RemoveInstance(
+                instanceNo
+            );
+
+
+            // ====================================
+            // Level Scale
+            // ====================================
+
+            const float levelScale =
+                enemy
+                ->GetLevelScale();
+
+
+            // ====================================
+            // 中央位置
+            // ====================================
+
+            Vector3 modelPosition =
+                enemy
+                ->GetPosition();
+
+
+            modelPosition.y +=
+                30.0f *
+                levelScale;
+
+
+            // ====================================
+            // 照準方向
+            // ====================================
+
+            Vector3 direction =
+                enemy
+                ->GetDirection();
+
+
+            direction.y =
+                0.0f;
+
+
+            const float directionLengthSquared =
+                direction.x *
+                direction.x +
+                direction.z *
+                direction.z;
+
+
+            if (directionLengthSquared <=
+                0.0001f)
+            {
+                direction =
+                    Vector3(
+                        0.0f,
+                        0.0f,
+                        1.0f
+                    );
+            }
+            else
+            {
+                direction.Normalize();
+            }
+
+
+            // ====================================
+            // 右方向
+            // ====================================
+
+            Vector3 right(
+                direction.z,
+                0.0f,
+                -direction.x
+            );
+
+
+            const float rightLengthSquared =
+                right.x *
+                right.x +
+                right.z *
+                right.z;
+
+
+            if (rightLengthSquared >
+                0.0001f)
+            {
+                right.Normalize();
+            }
+
+
+            // ====================================
+            // 本体回転
+            // ====================================
+
+            Quaternion bodyRotation =
+                Quaternion::Identity;
+
+
+            const float yaw =
+                std::atan2(
+                    direction.x,
+                    direction.z
+                );
+
+
+            bodyRotation.SetRotationDeg(
+                Vector3::AxisY,
+                yaw *
+                180.0f /
+                PI +
+                180.0f
+            );
+
+
+            // ====================================
+            // 本体サイズ
+            // ====================================
+
+            const Vector3 bodyScale(
+                levelScale,
+                levelScale,
+                levelScale
+            );
+
+
+            // ====================================
+            // 本体
+            // ====================================
+
+            m_bodyRender.UpdateInstancingData(
+                instanceNo,
+                modelPosition,
+                bodyRotation,
+                bodyScale
+            );
+
+
+            // ====================================
+            // クラス
+            // ====================================
+
+            const EnemyEvolution::TankClass tankClass =
+                enemy
+                ->GetTankClass();
+
+
+            // =================================================
+            // Basic
+            // =================================================
+
+            if (tankClass ==
+                EnemyEvolution::Basic)
+            {
+                const Quaternion barrelRotation =
+                    CreateBarrelRotation(
+                        direction
+                    );
+
+
+                m_barrelRender1.UpdateInstancingData(
+                    instanceNo,
+                    modelPosition,
+                    barrelRotation,
+                    bodyScale
+                );
+            }
+
+
+            // =================================================
+            // Twin
+            // =================================================
+
+            else if (
+                tankClass ==
+                EnemyEvolution::Twin)
+            {
+                const Quaternion barrelRotation =
+                    CreateBarrelRotation(
+                        direction
+                    );
+
+
+                // 左砲身
+                Vector3 leftPosition =
+                    modelPosition -
+                    right *
+                    (
+                        TWIN_BARREL_OFFSET *
+                        levelScale
+                        );
+
+
+                // 右砲身
+                Vector3 rightPosition =
+                    modelPosition +
+                    right *
+                    (
+                        TWIN_BARREL_OFFSET *
+                        levelScale
+                        );
+
+
+                m_barrelRender1.UpdateInstancingData(
+                    instanceNo,
+                    leftPosition,
+                    barrelRotation,
+                    bodyScale
+                );
+
+
+                m_barrelRender2.UpdateInstancingData(
+                    instanceNo,
+                    rightPosition,
+                    barrelRotation,
+                    bodyScale
+                );
+            }
+
+
+            // =================================================
+            // Sniper
+            // =================================================
+
+            else if (
+                tankClass ==
+                EnemyEvolution::Sniper)
+            {
+                const Quaternion barrelRotation =
+                    CreateBarrelRotation(
+                        direction
+                    );
+
+
+                // Player側Sniperと同じ考え方。
+                const Vector3 sniperScale(
+                    levelScale *
+                    0.82f,
+
+                    levelScale *
+                    0.82f,
+
+                    levelScale *
+                    1.35f
+                );
+
+
+                m_barrelRender1.UpdateInstancingData(
+                    instanceNo,
+                    modelPosition,
+                    barrelRotation,
+                    sniperScale
+                );
+            }
+
+
+            // =================================================
+            // Machine Gun
+            // =================================================
+
+            else if (
+                tankClass ==
+                EnemyEvolution::MachineGun)
+            {
+                const Quaternion barrelRotation =
+                    CreateBarrelRotation(
+                        direction
+                    );
+
+
+                m_machineGunBarrelRender
+                    .UpdateInstancingData(
+                        instanceNo,
+                        modelPosition,
+                        barrelRotation,
+                        bodyScale
+                    );
+            }
+
+
+            // =================================================
+            // Flank Guard
+            // =================================================
+
+            else if (
+                tankClass ==
+                EnemyEvolution::FlankGuard)
+            {
+                // 正面
+                const Quaternion frontRotation =
+                    CreateBarrelRotation(
+                        direction
+                    );
+
+
+                m_barrelRender1.UpdateInstancingData(
+                    instanceNo,
+                    modelPosition,
+                    frontRotation,
+                    bodyScale
+                );
+
+
+                // 後方
+                const Vector3 backDirection =
+                    direction *
+                    -1.0f;
+
+
+                const Quaternion backRotation =
+                    CreateBarrelRotation(
+                        backDirection
+                    );
+
+
+                m_barrelRender2.UpdateInstancingData(
+                    instanceNo,
+                    modelPosition,
+                    backRotation,
+                    bodyScale
+                );
+            }
+
+
+            // =================================================
+            // Smasher
+            // =================================================
+
+            else if (
+                tankClass ==
+                EnemyEvolution::Smasher)
+            {
+                // 砲身なし。
+
+
+                Quaternion shellRotation =
+                    Quaternion::Identity;
+
+
+                shellRotation.SetRotationDeg(
+                    Vector3::AxisY,
+                    m_smasherRotationDeg
+                );
+
+
+                m_smasherShellRender.UpdateInstancingData(
+                    instanceNo,
+                    modelPosition,
+                    shellRotation,
+                    bodyScale
+                );
+            }
+
+
+            // =================================================
+            // Sprayer
+            // =================================================
+
+            else if (
+                tankClass ==
+                EnemyEvolution::Sprayer)
+            {
+                const Quaternion barrelRotation =
+                    CreateBarrelRotation(
+                        direction
+                    );
+
+
+                // =================================
+                // 主砲
+                //
+                // Machine Gun系の大型砲身。
+                // =================================
+
+                m_machineGunBarrelRender
+                    .UpdateInstancingData(
+                        instanceNo,
+                        modelPosition,
+                        barrelRotation,
+                        bodyScale
+                    );
+
+
+                // =================================
+                // 小砲身
+                //
+                // 同じ方向へ小さく表示。
+                // =================================
+
+                const Vector3 smallBarrelScale(
+                    levelScale *
+                    0.65f,
+
+                    levelScale *
+                    0.65f,
+
+                    levelScale *
+                    0.85f
+                );
+
+
+                m_barrelRender1.UpdateInstancingData(
+                    instanceNo,
+                    modelPosition,
+                    barrelRotation,
+                    smallBarrelScale
+                );
+            }
+
+
+            ++instanceNo;
+
+
+            return true;
+        }
+    );
+
+
+    // ============================================
+    // 前フレームで多かった分を削除
+    // ============================================
+
+    for (int i = instanceNo;
+        i < m_previousInstanceCount;
+        ++i)
+    {
+        m_bodyRender.RemoveInstance(
+            i
+        );
+
+
+        m_barrelRender1.RemoveInstance(
+            i
+        );
+
+
+        m_barrelRender2.RemoveInstance(
+            i
+        );
+
+
+        m_machineGunBarrelRender.RemoveInstance(
+            i
+        );
+
+
+        m_smasherShellRender.RemoveInstance(
+            i
+        );
+    }
+
+
+    m_previousInstanceCount =
+        instanceNo;
+
+
+    // ============================================
+    // 一括描画
+    // ============================================
+
+    m_bodyRender.Draw(
+        rc
+    );
+
+
+    m_barrelRender1.Draw(
+        rc
+    );
+
+
+    m_barrelRender2.Draw(
+        rc
+    );
+
+
+    m_machineGunBarrelRender.Draw(
+        rc
+    );
+
+
+    m_smasherShellRender.Draw(
+        rc
+    );
+}
