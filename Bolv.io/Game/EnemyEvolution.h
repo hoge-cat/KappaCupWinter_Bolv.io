@@ -1,5 +1,5 @@
-#pragma once
 
+#pragma once
 
 class EnemyEvolution
 {
@@ -13,9 +13,10 @@ public:
         MachineGun,
         FlankGuard,
         Smasher,
-        Sprayer
+        Sprayer,
+        Assassin,
+        Hunter
     };
-
 
     enum BuildType
     {
@@ -27,30 +28,25 @@ public:
         Rammer
     };
 
-
     void Configure(
         int level,
         BuildType buildType
     );
-
 
     TankClass GetTankClass() const
     {
         return m_tankClass;
     }
 
-
     BuildType GetBuildType() const
     {
         return m_buildType;
     }
 
-
 private:
 
     TankClass m_tankClass =
         Basic;
-
 
     BuildType m_buildType =
         Balanced;
