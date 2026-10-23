@@ -50,4 +50,17 @@ private:
 
     BuildType m_buildType =
         Balanced;
+
+    // ============================================
+    // Assassin / Hunter 進化抽選
+    //
+    // 敵ごとに一度だけ抽選し、
+    // レベルアップ後も進化先を維持する。
+    // ============================================
+
+    bool m_hasSniperEvolutionRoll =
+        false;
+
+    TankClass m_sniperEvolutionResult =
+        Assassin;
 };

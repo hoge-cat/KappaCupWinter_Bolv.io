@@ -2,10 +2,22 @@
 #include "stdafx.h"
 #include "EnemyEvolution.h"
 
+#include <cstdlib>
+
 void EnemyEvolution::Configure(
     int level,
     BuildType buildType)
 {
+    // ============================================
+    // BuildTypeが変わった場合は抽選状態をリセット
+    // ============================================
+
+    if (m_buildType != buildType)
+    {
+        m_hasSniperEvolutionRoll = false;
+        m_sniperEvolutionResult = Assassin;
+    }
+
     m_buildType =
         buildType;
 
@@ -73,15 +85,27 @@ void EnemyEvolution::Configure(
     if (level >= 30 &&
         buildType == SniperShooter)
     {
-        // レベルによって進化先を分ける
-        if (level % 2 == 0)
+        // この敵でまだ抽選していない場合のみ実行
+        if (!m_hasSniperEvolutionRoll)
         {
-            m_tankClass = Assassin;
+            if (rand() % 2 == 0)
+            {
+                m_sniperEvolutionResult =
+                    Assassin;
+            }
+            else
+            {
+                m_sniperEvolutionResult =
+                    Hunter;
+            }
+
+            m_hasSniperEvolutionRoll =
+                true;
         }
-        else
-        {
-            m_tankClass = Hunter;
-        }
+
+        // 抽選済みの進化先を維持
+        m_tankClass =
+            m_sniperEvolutionResult;
     }
 
     // ============================================
