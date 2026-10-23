@@ -46,6 +46,18 @@ namespace
 
     const float SPRAYER_SPREAD_DEG =
         6.0f;
+
+    const float ASSASSIN_BULLET_SPEED_MULTIPLIER = 1.50f;
+    const float ASSASSIN_RELOAD_MULTIPLIER = 1.50f;
+    const float ASSASSIN_MUZZLE_MULTIPLIER = 1.32f;
+
+    const float HUNTER_SECOND_SHOT_DELAY = 0.08f;
+    const float HUNTER_BULLET_SPEED_MULTIPLIER = 1.40f;
+    const float HUNTER_BULLET_DAMAGE_MULTIPLIER = 0.75f;
+    const float HUNTER_SMALL_BULLET_SPREAD_DEG = 1.5f;
+    const float HUNTER_SMALL_BULLET_SIZE = 0.72f;
+    const float HUNTER_SMALL_MUZZLE_MULTIPLIER = 1.18f;
+    const float HUNTER_BIG_MUZZLE_MULTIPLIER = 1.02f;
 }
 
 
@@ -59,9 +71,30 @@ void EnemyWeapon::Update(
     const Vector3& direction
 )
 {
-    m_remainingTime -=
-        g_gameTime
-        ->GetFrameDeltaTime();
+    const float deltaTime =
+        g_gameTime->GetFrameDeltaTime();
+
+    // Hunterの予約済み2発目は通常リロードとは独立して処理する。
+    if (m_hunterSecondShotPending)
+    {
+        if (enemy.GetTankClass() != EnemyEvolution::Hunter)
+        {
+            m_hunterSecondShotPending = false;
+        }
+        else
+        {
+            m_hunterSecondShotRemainingTime -= deltaTime;
+            if (m_hunterSecondShotRemainingTime <= 0.0f)
+            {
+                m_hunterSecondShotPending = false;
+                Fire(enemy, position, direction, 0.0f, 0.0f,
+                    HUNTER_BULLET_DAMAGE_MULTIPLIER, 1.0f,
+                    HUNTER_BIG_MUZZLE_MULTIPLIER);
+            }
+        }
+    }
+
+    m_remainingTime -= deltaTime;
 
 
     if (m_remainingTime >
@@ -181,6 +214,36 @@ void EnemyWeapon::Update(
             SNIPER_RELOAD_MULTIPLIER;
     }
 
+
+    // ========================================================
+    // Assassin
+    // ========================================================
+
+    else if (tankClass == EnemyEvolution::Assassin)
+    {
+        Fire(enemy, position, aimDirection);
+        reloadInterval *= ASSASSIN_RELOAD_MULTIPLIER;
+    }
+
+    // ========================================================
+    // Hunter: 小弾を撃ち、0.08秒後に大弾を撃つ
+    // ========================================================
+
+    else if (tankClass == EnemyEvolution::Hunter)
+    {
+        const float random01 =
+            static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX);
+        const float spreadAngle =
+            (random01 * 2.0f - 1.0f) * HUNTER_SMALL_BULLET_SPREAD_DEG;
+
+        Fire(enemy, position, aimDirection, 0.0f, spreadAngle,
+            HUNTER_BULLET_DAMAGE_MULTIPLIER,
+            HUNTER_SMALL_BULLET_SIZE,
+            HUNTER_SMALL_MUZZLE_MULTIPLIER);
+
+        m_hunterSecondShotPending = true;
+        m_hunterSecondShotRemainingTime = HUNTER_SECOND_SHOT_DELAY;
+    }
 
     // ========================================================
     // Machine Gun
@@ -388,7 +451,8 @@ void EnemyWeapon::Fire(
     float sideOffset,
     float spreadAngleDeg,
     float damageMultiplier,
-    float bulletScaleMultiplier
+    float bulletScaleMultiplier,
+    float muzzleDistanceMultiplier
 )
 {
     Vector3 direction =
@@ -527,6 +591,12 @@ void EnemyWeapon::Fire(
         muzzleDistance *=
             SNIPER_MUZZLE_MULTIPLIER;
     }
+    else if (tankClass == EnemyEvolution::Assassin)
+    {
+        muzzleDistance *= ASSASSIN_MUZZLE_MULTIPLIER;
+    }
+
+    muzzleDistance *= muzzleDistanceMultiplier;
 
 
     firePosition +=
@@ -570,6 +640,14 @@ void EnemyWeapon::Fire(
     {
         speed *=
             SNIPER_BULLET_SPEED_MULTIPLIER;
+    }
+    else if (tankClass == EnemyEvolution::Assassin)
+    {
+        speed *= ASSASSIN_BULLET_SPEED_MULTIPLIER;
+    }
+    else if (tankClass == EnemyEvolution::Hunter)
+    {
+        speed *= HUNTER_BULLET_SPEED_MULTIPLIER;
     }
 
 
