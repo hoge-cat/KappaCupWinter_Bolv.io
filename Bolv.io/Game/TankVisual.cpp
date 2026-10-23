@@ -56,11 +56,20 @@ void TankVisual::Init()
 
 
     // ============================================
-    // Machine Gun / Trapper用
+    // Machine Gun用
     // ============================================
 
     m_machineGunBarrelRender.Init(
         "Assets/modelData/tank/TankMachineGunBarrel.tkm"
+    );
+
+
+    // ============================================
+    // Trapper専用砲身
+    // ============================================
+
+    m_trapperBarrelRender.Init(
+        "Assets/modelData/tank/TankTrapperBarrel.tkm"
     );
 
 
@@ -368,6 +377,11 @@ void TankVisual::Update(
     );
 
 
+    m_trapperBarrelRender.SetPosition(
+        modelPosition
+    );
+
+
     // ============================================
     // デフォルトサイズ
     // ============================================
@@ -402,6 +416,11 @@ void TankVisual::Update(
     );
 
 
+    m_trapperBarrelRender.SetScale(
+        normalBarrelScale
+    );
+
+
     // ============================================
     // デフォルト回転
     // ============================================
@@ -432,6 +451,11 @@ void TankVisual::Update(
 
 
     m_machineGunBarrelRender.SetRotation(
+        forwardRotation
+    );
+
+
+    m_trapperBarrelRender.SetRotation(
         forwardRotation
     );
 
@@ -633,6 +657,9 @@ void TankVisual::Update(
 
 
     m_machineGunBarrelRender.Update();
+
+
+    m_trapperBarrelRender.Update();
 
 
     m_smasherShellRender.Update();
