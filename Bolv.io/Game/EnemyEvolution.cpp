@@ -79,6 +79,18 @@ void EnemyEvolution::Configure(
 
     // ============================================
     // Lv30進化
+    // Twin → Triple Shot
+    // ============================================
+
+    if (level >= 30 &&
+        buildType == TwinShooter)
+    {
+        m_tankClass =
+            TripleShot;
+    }
+
+    // ============================================
+    // Lv30進化
     // Sniper → Assassin / Hunter
     // ============================================
 

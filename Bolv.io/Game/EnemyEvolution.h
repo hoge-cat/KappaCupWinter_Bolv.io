@@ -15,8 +15,10 @@ public:
         Smasher,
         Sprayer,
         Assassin,
-        Hunter
+        Hunter,
+        TripleShot
     };
+
 
     enum BuildType
     {

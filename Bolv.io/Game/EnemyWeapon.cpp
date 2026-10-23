@@ -158,6 +158,55 @@ void EnemyWeapon::Update(
         .GetReloadInterval();
 
 
+    // ============================================
+    // Triple Shot
+    // 中央・左35度・右35度の3方向へ同時射撃
+    // ============================================
+
+    if (tankClass ==
+        EnemyEvolution::TripleShot)
+    {
+        // 中央
+        Fire(
+            enemy,
+            position,
+            aimDirection,
+            0.0f,
+            0.0f
+        );
+
+        // 左
+        Fire(
+            enemy,
+            position,
+            aimDirection,
+            -6.0f,
+            -30.0f
+        );
+
+        // 右
+        Fire(
+            enemy,
+            position,
+            aimDirection,
+            6.0f,
+            30.0f
+        );
+
+        m_twinFireLeft = true;
+        m_sprayerSecondShot = false;
+
+        if (reloadInterval < 0.04f)
+        {
+            reloadInterval = 0.04f;
+        }
+
+        m_remainingTime = reloadInterval;
+
+        return;
+    }
+
+
     // ========================================================
     // Twin
     //
