@@ -725,6 +725,40 @@ void Enemy::Move()
 	}
 
 
+
+	// ============================================
+	// Assassin
+	// Sniperより高精度な遠距離射撃
+	// ============================================
+
+	else if (
+		tankClass ==
+		EnemyEvolution::Assassin)
+	{
+		maxAimErrorDeg *=
+			0.35f;
+
+		aimChangeInterval =
+			1.00f;
+	}
+
+	// ============================================
+	// Hunter
+	// 2連射を活かす高精度な照準
+	// ============================================
+
+	else if (
+		tankClass ==
+		EnemyEvolution::Hunter)
+	{
+		maxAimErrorDeg *=
+			0.50f;
+
+		aimChangeInterval =
+			0.85f;
+	}
+
+
 	// ============================================
 	// Machine Gun
 	// ============================================

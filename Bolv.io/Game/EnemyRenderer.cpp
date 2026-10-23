@@ -577,6 +577,72 @@ void EnemyRenderer::Render(
 
 
             // =================================================
+            // Assassin
+            // =================================================
+
+            else if (
+                tankClass ==
+                EnemyEvolution::Assassin)
+            {
+                const Quaternion barrelRotation =
+                    CreateBarrelRotation(direction);
+
+                const Vector3 assassinScale(
+                    levelScale * 0.72f,
+                    levelScale * 0.72f,
+                    levelScale * 1.50f
+                );
+
+                m_barrelRender1.UpdateInstancingData(
+                    instanceNo,
+                    modelPosition,
+                    barrelRotation,
+                    assassinScale
+                );
+            }
+
+            // =================================================
+            // Hunter
+            // =================================================
+
+            else if (
+                tankClass ==
+                EnemyEvolution::Hunter)
+            {
+                const Quaternion barrelRotation =
+                    CreateBarrelRotation(direction);
+
+                // 外側の太い砲身
+                const Vector3 outerBarrelScale(
+                    levelScale * 1.05f,
+                    levelScale * 1.05f,
+                    levelScale * 1.02f
+                );
+
+                m_barrelRender1.UpdateInstancingData(
+                    instanceNo,
+                    modelPosition,
+                    barrelRotation,
+                    outerBarrelScale
+                );
+
+                // 内側の細長い砲身を同じ位置に重ねる
+                const Vector3 innerBarrelScale(
+                    levelScale * 0.72f,
+                    levelScale * 0.72f,
+                    levelScale * 1.18f
+                );
+
+                m_barrelRender2.UpdateInstancingData(
+                    instanceNo,
+                    modelPosition,
+                    barrelRotation,
+                    innerBarrelScale
+                );
+            }
+
+
+            // =================================================
             // Machine Gun
             // =================================================
 
