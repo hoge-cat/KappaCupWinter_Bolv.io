@@ -5,43 +5,22 @@
 namespace
 {
     // ========================================================
-    // Trapper Launcher
-    //
-    // 本家Trapperは
-    //
-    // ・本体側に細い根元
-    // ・先端側に広がったLauncher
-    //
-    // という見た目。
-    //
-    // Bolv.ioでは既存の
-    //
-    // TankBarrel.tkm
-    // +
-    // TankMachineGunBarrel.tkm
-    //
-    // を組み合わせる。
+    // Trapper砲身の調整
     // ========================================================
 
-    const float TRAPPER_BASE_WIDTH_SCALE =
-        0.72f;
+    // 砲身の横幅・高さ
+    const float TRAPPER_BARREL_WIDTH_SCALE =
+        1.25f;
 
 
-    const float TRAPPER_BASE_LENGTH_SCALE =
-        0.48f;
+    // 砲身の長さ
+    const float TRAPPER_BARREL_LENGTH_SCALE =
+        0.95f;
 
 
-    const float TRAPPER_LAUNCHER_WIDTH_SCALE =
-        1.18f;
-
-
-    const float TRAPPER_LAUNCHER_LENGTH_SCALE =
-        0.72f;
-
-
-    // Launcherを少し前方へ配置。
-    const float TRAPPER_LAUNCHER_FORWARD_OFFSET =
-        11.0f;
+    // 砲身を前方に移動する距離
+    const float TRAPPER_FORWARD_OFFSET =
+        2.0f;
 }
 
 
@@ -55,57 +34,41 @@ void TankVisual::UpdateTrapper(
 )
 {
     // ========================================================
-    // 根元
+    // 砲身の位置
     // ========================================================
 
-    m_barrelRender1.SetPosition(
-        modelPosition
-    );
-
-
-    m_barrelRender1.SetScale(
-        Vector3(
-            TRAPPER_BASE_WIDTH_SCALE *
-            m_levelScale,
-
-            TRAPPER_BASE_WIDTH_SCALE *
-            m_levelScale,
-
-            TRAPPER_BASE_LENGTH_SCALE *
-            m_levelScale
-        )
-    );
-
-
-    // ========================================================
-    // Launcher
-    // ========================================================
-
-    const Vector3 launcherPosition =
+    const Vector3 barrelPosition =
         modelPosition +
         direction *
         (
-            TRAPPER_LAUNCHER_FORWARD_OFFSET *
+            TRAPPER_FORWARD_OFFSET *
             m_levelScale
             );
 
 
-    m_machineGunBarrelRender.SetPosition(
-        launcherPosition
+    m_trapperBarrelRender.SetPosition(
+        barrelPosition
     );
 
 
-    m_machineGunBarrelRender.SetScale(
-        Vector3(
-            TRAPPER_LAUNCHER_WIDTH_SCALE *
-            m_levelScale,
+    // ========================================================
+    // 砲身の大きさ
+    // ========================================================
 
-            TRAPPER_LAUNCHER_WIDTH_SCALE *
-            m_levelScale,
+    const Vector3 trapperBarrelScale(
+        TRAPPER_BARREL_WIDTH_SCALE *
+        m_levelScale,
 
-            TRAPPER_LAUNCHER_LENGTH_SCALE *
-            m_levelScale
-        )
+        TRAPPER_BARREL_WIDTH_SCALE *
+        m_levelScale,
+
+        TRAPPER_BARREL_LENGTH_SCALE *
+        m_levelScale
+    );
+
+
+    m_trapperBarrelRender.SetScale(
+        trapperBarrelScale
     );
 }
 
@@ -118,20 +81,7 @@ void TankVisual::RenderTrapper(
     RenderContext& rc
 )
 {
-    // ============================================
-    // 根元
-    // ============================================
-
-    m_barrelRender1.Draw(
-        rc
-    );
-
-
-    // ============================================
-    // Launcher
-    // ============================================
-
-    m_machineGunBarrelRender.Draw(
+    m_trapperBarrelRender.Draw(
         rc
     );
 }
