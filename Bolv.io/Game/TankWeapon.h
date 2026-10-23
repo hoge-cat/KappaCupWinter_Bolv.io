@@ -1,4 +1,5 @@
-﻿#pragma once
+﻿
+#pragma once
 
 
 // ============================================================
@@ -21,28 +22,24 @@ private:
     // 共通Bullet生成
     //
     // sideOffset
-    //
-    //  0 = 中央
-    // -値 = 左
-    // +値 = 右
-    //
+    //   0 = 中央
+    //  -値 = 左
+    //  +値 = 右
     //
     // angleOffsetDeg
-    //
     //    0 = 正面
     //  -90 = 左
     //   90 = 右
     //  180 = 後方
     //
-    //
     // bulletSizeMultiplier
-    //
-    // Bulletモデルサイズ倍率。
-    //
+    //   Bulletモデルサイズ倍率
     //
     // muzzleDistanceMultiplier
+    //   砲口位置倍率
     //
-    // 砲口位置倍率。
+    // damageMultiplier
+    //   弾ダメージ倍率
     // ========================================================
 
     void Fire(
@@ -51,7 +48,8 @@ private:
         float sideOffset,
         float angleOffsetDeg,
         float bulletSizeMultiplier = 1.0f,
-        float muzzleDistanceMultiplier = 1.0f
+        float muzzleDistanceMultiplier = 1.0f,
+        float damageMultiplier = 1.0f
     );
 
 
@@ -74,7 +72,6 @@ private:
         const Vector3& aimDirection
     );
 
-
     float GetTwinReloadMultiplier() const;
 
 
@@ -86,7 +83,6 @@ private:
         const Vector3& playerPosition,
         const Vector3& aimDirection
     );
-
 
     float GetTripleShotReloadMultiplier() const;
 
@@ -110,12 +106,9 @@ private:
         const Vector3& aimDirection
     );
 
-
     float GetTwinFlankReloadMultiplier() const;
 
-
     float GetTwinFlankBulletDamageMultiplier() const;
-
 
     float GetTwinFlankBulletPenetrationMultiplier() const;
 
@@ -129,12 +122,9 @@ private:
         const Vector3& aimDirection
     );
 
-
     float GetSniperReloadMultiplier() const;
 
-
     float GetSniperBulletSpeedMultiplier() const;
-
 
     float GetSniperMuzzleDistanceMultiplier() const;
 
@@ -148,12 +138,9 @@ private:
         const Vector3& aimDirection
     );
 
-
     float GetAssassinReloadMultiplier() const;
 
-
     float GetAssassinBulletSpeedMultiplier() const;
-
 
     float GetAssassinMuzzleDistanceMultiplier() const;
 
@@ -167,18 +154,14 @@ private:
         const Vector3& aimDirection
     );
 
-
     void FireHunterSecondShot(
         const Vector3& playerPosition,
         const Vector3& aimDirection
     );
 
-
     float GetHunterSecondShotDelay() const;
 
-
     float GetHunterBulletSpeedMultiplier() const;
-
 
     float GetHunterBulletDamageMultiplier() const;
 
@@ -191,7 +174,6 @@ private:
         const Vector3& playerPosition,
         const Vector3& aimDirection
     );
-
 
     float GetTrapperReloadInterval(
         int reloadLevel
@@ -207,7 +189,6 @@ private:
         const Vector3& aimDirection
     );
 
-
     float GetMachineGunReloadMultiplier() const;
 
 
@@ -221,6 +202,40 @@ private:
     );
 
 
+    // ========================================================
+    // Sprayer
+    //
+    // 外側：高速・広範囲拡散
+    // 内側：低威力・小型弾・狭範囲拡散
+    //
+    // 2本の砲身は独立した周期で射撃する。
+    // ========================================================
+
+    void UpdateSprayer(
+        const Vector3& playerPosition,
+        const Vector3& aimDirection,
+        float deltaTime
+    );
+
+    void FireSprayerOuter(
+        const Vector3& playerPosition,
+        const Vector3& aimDirection
+    );
+
+    void FireSprayerInner(
+        const Vector3& playerPosition,
+        const Vector3& aimDirection
+    );
+
+    float GetSprayerOuterReloadInterval(
+        int reloadLevel
+    ) const;
+
+    float GetSprayerInnerReloadInterval(
+        int reloadLevel
+    ) const;
+
+
 private:
 
     // ========================================================
@@ -229,7 +244,6 @@ private:
 
     float m_fireInterval =
         0.5f;
-
 
     float m_remainingTime =
         0.0f;
@@ -259,14 +273,25 @@ private:
     // ========================================================
     // Hunter
     //
-    // 1発目の小さい弾を撃ったあと、
-    // 少し遅れて2発目を撃つ。
+    // 小さい弾のあとに大きい弾を発射。
     // ========================================================
 
     bool m_hunterSecondShotPending =
         false;
 
-
     float m_hunterSecondShotRemainingTime =
+        0.0f;
+
+
+    // ========================================================
+    // Sprayer
+    //
+    // 砲身ごとに独立したリロード時間を管理。
+    // ========================================================
+
+    float m_sprayerOuterRemainingTime =
+        0.0f;
+
+    float m_sprayerInnerRemainingTime =
         0.0f;
 };

@@ -339,6 +339,9 @@
     <ClCompile Include="TrapRenderer.cpp">
       <Filter>弾\トラップ</Filter>
     </ClCompile>
+    <ClCompile Include="TankWeaponSprayer.cpp">
+      <Filter>自機\武器</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="system\system.h">

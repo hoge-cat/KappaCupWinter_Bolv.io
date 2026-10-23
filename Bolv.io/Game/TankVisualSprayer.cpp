@@ -1,168 +1,67 @@
+
 #include "stdafx.h"
 #include "TankVisual.h"
-
-#include <cmath>
-
-
-namespace
-{
-    const float PI =
-        3.14159265f;
-
-
-    // ============================================
-    // Sprayer
-    // ============================================
-
-    const float SPRAYER_ANGLE_1 =
-        -14.0f;
-
-    const float SPRAYER_ANGLE_2 =
-        -7.0f;
-
-    const float SPRAYER_ANGLE_3 =
-        0.0f;
-
-    const float SPRAYER_ANGLE_4 =
-        7.0f;
-
-    const float SPRAYER_ANGLE_5 =
-        14.0f;
-}
 
 
 // ============================================================
 // UpdateSprayer
+//
+// 外側：Machine Gunの台形砲身
+// 内側：少し太く、長くした通常砲身
 // ============================================================
 
 void TankVisual::UpdateSprayer(
-    const Vector3& direction)
+    const Vector3& direction
+)
 {
-    // ============================================
-    // 5本の角度
-    // ============================================
+    // ========================================================
+    // 共通回転
+    // ========================================================
 
-    const float angles[5] =
-    {
-        SPRAYER_ANGLE_1,
-        SPRAYER_ANGLE_2,
-        SPRAYER_ANGLE_3,
-        SPRAYER_ANGLE_4,
-        SPRAYER_ANGLE_5
-    };
+    const Quaternion barrelRotation =
+        CreateBarrelRotation(
+            direction
+        );
 
 
-    ModelRender* barrels[5] =
-    {
-        &m_barrelRender1,
-        &m_barrelRender2,
-        &m_barrelRender3,
-        &m_barrelRender4,
-        &m_barrelRender5
-    };
+    // ========================================================
+    // 外側：Machine Gun砲身（変更なし）
+    // ========================================================
 
-
-    // ============================================
-    // 各砲身を扇状にする
-    // ============================================
-
-    for (int i = 0;
-        i < 5;
-        ++i)
-    {
-        const float angleRad =
-            angles[i] *
-            PI /
-            180.0f;
-
-
-        Vector3 barrelDirection;
-
-
-        barrelDirection.x =
-            direction.x *
-            std::cos(
-                angleRad
-            ) +
-            direction.z *
-            std::sin(
-                angleRad
-            );
-
-
-        barrelDirection.y =
-            0.0f;
-
-
-        barrelDirection.z =
-            -direction.x *
-            std::sin(
-                angleRad
-            ) +
-            direction.z *
-            std::cos(
-                angleRad
-            );
-
-
-        barrelDirection.Normalize();
-
-
-        // ========================================
-        // 共通関数で砲身回転を作る
-        // ========================================
-
-        const Quaternion barrelRotation =
-            CreateBarrelRotation(
-                barrelDirection
-            );
-
-
-        barrels[i]
-            ->SetRotation(
-                barrelRotation
-            );
-    }
-
-
-    // ============================================
-    // Sprayer砲身サイズ
-    // ============================================
-
-    const Vector3 sprayerScale(
-        0.72f *
-        m_levelScale,
-
-        0.72f *
-        m_levelScale,
-
-        1.0f *
-        m_levelScale
+    const Vector3 outerBarrelScale(
+        1.35f * m_levelScale,
+        1.35f * m_levelScale,
+        1.00f * m_levelScale
     );
 
+    m_machineGunBarrelRender.SetRotation(
+        barrelRotation
+    );
+
+    m_machineGunBarrelRender.SetScale(
+        outerBarrelScale
+    );
+
+
+    // ========================================================
+    // 内側：通常砲身
+    //
+    // 太さ：0.85 → 0.95
+    // 長さ：1.10 → 1.20
+    // ========================================================
+
+    const Vector3 innerBarrelScale(
+        0.95f * m_levelScale,
+        0.95f * m_levelScale,
+        1.20f * m_levelScale
+    );
+
+    m_barrelRender1.SetRotation(
+        barrelRotation
+    );
 
     m_barrelRender1.SetScale(
-        sprayerScale
-    );
-
-
-    m_barrelRender2.SetScale(
-        sprayerScale
-    );
-
-
-    m_barrelRender3.SetScale(
-        sprayerScale
-    );
-
-
-    m_barrelRender4.SetScale(
-        sprayerScale
-    );
-
-
-    m_barrelRender5.SetScale(
-        sprayerScale
+        innerBarrelScale
     );
 }
 
@@ -172,29 +71,16 @@ void TankVisual::UpdateSprayer(
 // ============================================================
 
 void TankVisual::RenderSprayer(
-    RenderContext& rc)
+    RenderContext& rc
+)
 {
+    // 外側：Machine Gun砲身
+    m_machineGunBarrelRender.Draw(
+        rc
+    );
+
+    // 内側：通常砲身
     m_barrelRender1.Draw(
-        rc
-    );
-
-
-    m_barrelRender2.Draw(
-        rc
-    );
-
-
-    m_barrelRender3.Draw(
-        rc
-    );
-
-
-    m_barrelRender4.Draw(
-        rc
-    );
-
-
-    m_barrelRender5.Draw(
         rc
     );
 }

@@ -286,6 +286,7 @@
     <ClCompile Include="TankWeaponMachineGun.cpp" />
     <ClCompile Include="TankWeaponQuadTank.cpp" />
     <ClCompile Include="TankWeaponSniper.cpp" />
+    <ClCompile Include="TankWeaponSprayer.cpp" />
     <ClCompile Include="TankWeaponTrapper.cpp" />
     <ClCompile Include="TankWeaponTripleShot.cpp" />
     <ClCompile Include="TankWeaponTwinFlank.cpp" />

@@ -1,23 +1,29 @@
+
 #include "stdafx.h"
 #include "TankVisual.h"
 
 
 // ============================================================
 // UpdateMachineGun
+//
+// Lv45 Sprayerの外側砲身と同じサイズにする。
 // ============================================================
 
 void TankVisual::UpdateMachineGun()
 {
-    // 3ds Max側ですでに
-    // Machine Gun用の台形砲身になっているため、
-    // ここではレベル倍率だけ適用する。
+    // ========================================================
+    // Machine Gun砲身
+    //
+    // 横幅：1.35倍
+    // 高さ：1.35倍
+    // 長さ：1.00倍
+    // ========================================================
 
     const Vector3 machineGunScale(
-        m_levelScale,
-        m_levelScale,
-        m_levelScale
+        1.35f * m_levelScale,
+        1.35f * m_levelScale,
+        1.00f * m_levelScale
     );
-
 
     m_machineGunBarrelRender.SetScale(
         machineGunScale
@@ -30,7 +36,8 @@ void TankVisual::UpdateMachineGun()
 // ============================================================
 
 void TankVisual::RenderMachineGun(
-    RenderContext& rc)
+    RenderContext& rc
+)
 {
     m_machineGunBarrelRender.Draw(
         rc

@@ -238,17 +238,6 @@ void TankWeapon::Update(
 
 
     // ============================================
-    // リロード中
-    // ============================================
-
-    if (m_remainingTime >
-        0.0f)
-    {
-        return;
-    }
-
-
-    // ============================================
     // 照準方向確認
     // ============================================
 
@@ -289,6 +278,39 @@ void TankWeapon::Update(
             player
             ->GetEvolution()
             .GetCurrentClass();
+    }
+
+
+    // ========================================================
+    // Sprayer
+    //
+    // 外側・内側の砲身を独立して制御する。
+    // 共通リロード判定より先に処理する。
+    // ========================================================
+
+    if (tankClass ==
+        PlayerEvolution::Sprayer)
+    {
+        UpdateSprayer(
+            playerPosition,
+            aimDirection,
+            deltaTime
+        );
+
+        return;
+    }
+
+
+    // ========================================================
+    // 共通リロード判定
+    //
+    // Sprayer以外の武器に適用する。
+    // ========================================================
+
+    if (m_remainingTime >
+        0.0f)
+    {
+        return;
     }
 
 
@@ -661,13 +683,16 @@ void TankWeapon::Update(
 // Fire
 // ============================================================
 
+
 void TankWeapon::Fire(
     const Vector3& playerPosition,
     const Vector3& aimDirection,
     float sideOffset,
     float angleOffsetDeg,
     float bulletSizeMultiplier,
-    float muzzleDistanceMultiplier)
+    float muzzleDistanceMultiplier,
+    float damageMultiplier)
+
 {
     // ============================================
     // 基準射撃方向
@@ -1024,6 +1049,36 @@ void TankWeapon::Fire(
             speed *=
                 GetHunterBulletSpeedMultiplier();
         }
+    }
+
+
+    // ============================================
+    // 弾ダメージ倍率
+    //
+    // Sprayerの砲身ごとの威力調整に使用。
+    // 既存武器は1.0倍なので変更なし。
+    // ============================================
+
+    damage = static_cast<int>(
+        static_cast<float>(damage) *
+        damageMultiplier +
+        0.5f
+        );
+
+    collisionDamage = static_cast<int>(
+        static_cast<float>(collisionDamage) *
+        damageMultiplier +
+        0.5f
+        );
+
+    if (damage < 1)
+    {
+        damage = 1;
+    }
+
+    if (collisionDamage < 1)
+    {
+        collisionDamage = 1;
     }
 
 
