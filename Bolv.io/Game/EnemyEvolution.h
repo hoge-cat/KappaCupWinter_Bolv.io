@@ -5,6 +5,10 @@ class EnemyEvolution
 {
 public:
 
+    // ============================================
+    // 戦車クラス
+    // ============================================
+
     enum TankClass
     {
         Basic,
@@ -16,9 +20,13 @@ public:
         Sprayer,
         Assassin,
         Hunter,
-        TripleShot
+        TripleShot,
+        QuadTank
     };
 
+    // ============================================
+    // 敵の育成方針
+    // ============================================
 
     enum BuildType
     {
@@ -29,6 +37,10 @@ public:
         FlankShooter,
         Rammer
     };
+
+    // ============================================
+    // レベルに応じた進化設定
+    // ============================================
 
     void Configure(
         int level,
@@ -54,10 +66,9 @@ private:
         Balanced;
 
     // ============================================
-    // Assassin / Hunter 進化抽選
+    // Sniper系のLv30進化抽選
     //
-    // 敵ごとに一度だけ抽選し、
-    // レベルアップ後も進化先を維持する。
+    // Assassin / Hunter
     // ============================================
 
     bool m_hasSniperEvolutionRoll =
@@ -65,4 +76,17 @@ private:
 
     TankClass m_sniperEvolutionResult =
         Assassin;
+
+
+    // ============================================
+    // Twin系のLv30進化抽選
+    //
+    // Triple Shot / Quad Tank
+    // ============================================
+
+    bool m_hasTwinEvolutionRoll =
+        false;
+
+    TankClass m_twinEvolutionResult =
+        TripleShot;
 };

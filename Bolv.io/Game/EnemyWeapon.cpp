@@ -208,6 +208,31 @@ void EnemyWeapon::Update(
 
 
     // ========================================================
+    // Quad Tank
+    // 正面・右・後方・左の4方向へ同時射撃
+    // ========================================================
+
+    if (tankClass == EnemyEvolution::QuadTank)
+    {
+        Fire(enemy, position, aimDirection, 0.0f, 0.0f);
+        Fire(enemy, position, aimDirection, 0.0f, 90.0f);
+        Fire(enemy, position, aimDirection, 0.0f, 180.0f);
+        Fire(enemy, position, aimDirection, 0.0f, -90.0f);
+
+        m_twinFireLeft = true;
+        m_sprayerSecondShot = false;
+
+        if (reloadInterval < 0.04f)
+        {
+            reloadInterval = 0.04f;
+        }
+
+        m_remainingTime = reloadInterval;
+        return;
+    }
+
+
+    // ========================================================
     // Twin
     //
     // 左右を交互に発射。

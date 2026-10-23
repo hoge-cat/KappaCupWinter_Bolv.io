@@ -31,10 +31,9 @@ private:
     // ============================================
 
     ModelRender m_barrelRender1;
-
     ModelRender m_barrelRender2;
-
     ModelRender m_barrelRender3;
+    ModelRender m_barrelRender4;
 
     // ============================================
     // Machine Gun / Sprayer主砲
