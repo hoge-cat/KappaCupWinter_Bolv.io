@@ -9,8 +9,7 @@
 // Configure
 //
 // 敵のレベルと育成方針から進化先を決定する。
-// Lv30で複数の進化先がある場合は、
-// 敵ごとに一度だけランダム抽選する。
+// 複数の進化先がある場合は敵ごとに一度だけ抽選する。
 // ============================================================
 
 void EnemyEvolution::Configure(
@@ -19,22 +18,22 @@ void EnemyEvolution::Configure(
 )
 {
     // ============================================
-    // 育成方針が変更された場合は抽選をリセット
+    // 育成方針が変わったら抽選をリセット
     // ============================================
 
     if (m_buildType != buildType)
     {
         m_hasSniperEvolutionRoll = false;
-
         m_sniperEvolutionResult = Assassin;
 
         m_hasTwinEvolutionRoll = false;
-
         m_twinEvolutionResult = TripleShot;
+
+        m_hasFlankEvolutionRoll = false;
+        m_flankEvolutionResult = QuadTank;
     }
 
     m_buildType = buildType;
-
     m_tankClass = Basic;
 
 
@@ -50,7 +49,6 @@ void EnemyEvolution::Configure(
 
     // ============================================
     // Rammer系
-    //
     // Lv30以上でSmasher
     // ============================================
 
@@ -72,28 +70,23 @@ void EnemyEvolution::Configure(
     switch (buildType)
     {
     case TwinShooter:
-
         m_tankClass = Twin;
         break;
 
     case SniperShooter:
-
         m_tankClass = Sniper;
         break;
 
     case RapidShooter:
-
         m_tankClass = MachineGun;
         break;
 
     case FlankShooter:
-
         m_tankClass = FlankGuard;
         break;
 
     case Balanced:
     default:
-
         m_tankClass = Basic;
         break;
     }
@@ -101,7 +94,7 @@ void EnemyEvolution::Configure(
 
     // ============================================
     // Lv30進化
-    // Twin → Triple Shot / Quad Tank
+    // Twin → Triple Shot / Quad Tank / Twin Flank
     // ============================================
 
     if (level >= 30 &&
@@ -109,19 +102,55 @@ void EnemyEvolution::Configure(
     {
         if (!m_hasTwinEvolutionRoll)
         {
-            if (rand() % 2 == 0)
+            const int result = rand() % 3;
+
+            switch (result)
             {
+            case 0:
                 m_twinEvolutionResult = TripleShot;
-            }
-            else
-            {
+                break;
+
+            case 1:
                 m_twinEvolutionResult = QuadTank;
+                break;
+
+            default:
+                m_twinEvolutionResult = TwinFlank;
+                break;
             }
 
             m_hasTwinEvolutionRoll = true;
         }
 
         m_tankClass = m_twinEvolutionResult;
+    }
+
+
+    // ============================================
+    // Lv30進化
+    // Flank Guard → Quad Tank / Twin Flank
+    //
+    // FlankShooter専用の抽選結果を保持する。
+    // ============================================
+
+    if (level >= 30 &&
+        buildType == FlankShooter)
+    {
+        if (!m_hasFlankEvolutionRoll)
+        {
+            if (rand() % 2 == 0)
+            {
+                m_flankEvolutionResult = QuadTank;
+            }
+            else
+            {
+                m_flankEvolutionResult = TwinFlank;
+            }
+
+            m_hasFlankEvolutionRoll = true;
+        }
+
+        m_tankClass = m_flankEvolutionResult;
     }
 
 

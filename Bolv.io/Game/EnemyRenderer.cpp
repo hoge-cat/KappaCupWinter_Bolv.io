@@ -660,6 +660,50 @@ void EnemyRenderer::Render(
 
 
             // =================================================
+            // Twin Flank
+            // 前方左右2本 + 後方左右2本
+            // プレイヤーのTankVisualTwinFlankと同じ配置
+            // =================================================
+
+            else if (tankClass == EnemyEvolution::TwinFlank)
+            {
+                const Vector3 backDirection = direction * -1.0f;
+
+                const Vector3 leftPosition =
+                    modelPosition - right * (TWIN_BARREL_OFFSET * levelScale);
+
+                const Vector3 rightPosition =
+                    modelPosition + right * (TWIN_BARREL_OFFSET * levelScale);
+
+                const Quaternion frontRotation =
+                    CreateBarrelRotation(direction);
+
+                const Quaternion backRotation =
+                    CreateBarrelRotation(backDirection);
+
+                // 前方左
+                m_barrelRender1.UpdateInstancingData(
+                    instanceNo, leftPosition, frontRotation, bodyScale
+                );
+
+                // 前方右
+                m_barrelRender2.UpdateInstancingData(
+                    instanceNo, rightPosition, frontRotation, bodyScale
+                );
+
+                // 後方左
+                m_barrelRender3.UpdateInstancingData(
+                    instanceNo, leftPosition, backRotation, bodyScale
+                );
+
+                // 後方右
+                m_barrelRender4.UpdateInstancingData(
+                    instanceNo, rightPosition, backRotation, bodyScale
+                );
+            }
+
+
+            // =================================================
             // Sniper
             // =================================================
 

@@ -17,6 +17,11 @@ namespace
     const float TWIN_BARREL_OFFSET =
         11.0f;
 
+    // Twin Flank: 前後の左右砲身を交互に使用
+    const float TWIN_FLANK_BARREL_OFFSET = 11.0f;
+    const float TWIN_FLANK_BULLET_DAMAGE_MULTIPLIER = 0.60f;
+    const float TWIN_FLANK_BULLET_PENETRATION_MULTIPLIER = 0.90f;
+
 
     const float SNIPER_BULLET_SPEED_MULTIPLIER =
         1.35f;
@@ -227,6 +232,53 @@ void EnemyWeapon::Update(
             reloadInterval = 0.04f;
         }
 
+        m_remainingTime = reloadInterval;
+        return;
+    }
+
+
+    // ========================================================
+    // Twin Flank
+    // 前後から同時に1発ずつ、左右砲身を交互に使用
+    // ========================================================
+
+    if (tankClass == EnemyEvolution::TwinFlank)
+    {
+        if (m_twinFlankFireLeft)
+        {
+            // 前方左
+            Fire(enemy, position, aimDirection,
+                -TWIN_FLANK_BARREL_OFFSET, 0.0f,
+                TWIN_FLANK_BULLET_DAMAGE_MULTIPLIER);
+
+            // 後方左（180度回転で左右基準が反転）
+            Fire(enemy, position, aimDirection,
+                TWIN_FLANK_BARREL_OFFSET, 180.0f,
+                TWIN_FLANK_BULLET_DAMAGE_MULTIPLIER);
+        }
+        else
+        {
+            // 前方右
+            Fire(enemy, position, aimDirection,
+                TWIN_FLANK_BARREL_OFFSET, 0.0f,
+                TWIN_FLANK_BULLET_DAMAGE_MULTIPLIER);
+
+            // 後方右
+            Fire(enemy, position, aimDirection,
+                -TWIN_FLANK_BARREL_OFFSET, 180.0f,
+                TWIN_FLANK_BULLET_DAMAGE_MULTIPLIER);
+        }
+
+        m_twinFlankFireLeft = !m_twinFlankFireLeft;
+        m_twinFireLeft = true;
+        m_sprayerSecondShot = false;
+
+        // Twinと同じリロード倍率
+        reloadInterval *= 0.5f;
+        if (reloadInterval < 0.04f)
+        {
+            reloadInterval = 0.04f;
+        }
         m_remainingTime = reloadInterval;
         return;
     }
@@ -703,6 +755,19 @@ void EnemyWeapon::Fire(
     int collisionDamage =
         enemy
         .GetBulletCollisionDamage();
+
+    // Twin Flankは通常弾の貫通力90%。
+    // EnemyBullet::Initは整数の貫通力を受け取る。
+    if (tankClass == EnemyEvolution::TwinFlank)
+    {
+        penetration = static_cast<int>(
+            static_cast<float>(penetration) *
+            TWIN_FLANK_BULLET_PENETRATION_MULTIPLIER);
+        if (penetration < 1)
+        {
+            penetration = 1;
+        }
+    }
 
 
     // ============================================

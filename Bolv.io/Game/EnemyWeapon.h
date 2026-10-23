@@ -26,27 +26,38 @@ private:
         float muzzleDistanceMultiplier = 1.0f
     );
 
-private:
+    // ============================================
+    // 通常射撃のリロード管理
+    // ============================================
 
-    float m_remainingTime =
-        0.0f;
+    float m_remainingTime = 0.0f;
 
-    // Twin左右交互。
-    bool m_twinFireLeft =
-        true;
+    // ============================================
+    // Twin
+    // ============================================
 
-    // Sprayerの発射サイクル。
+    bool m_twinFireLeft = true;
+
+    // ============================================
+    // Twin Flank
     //
-    // false: 大弾1発
-    // true : 大弾＋小弾
-    bool m_sprayerSecondShot =
-        false;
+    // 前後の左砲身 → 前後の右砲身
+    // を交互に使用する。
+    // ============================================
 
-    // Hunterの2発目の発射待ち。
-    bool m_hunterSecondShotPending =
-        false;
+    bool m_twinFlankFireLeft = true;
 
-    // Hunterの2発目までの残り時間。
-    float m_hunterSecondShotRemainingTime =
-        0.0f;
+    // ============================================
+    // Sprayer
+    // ============================================
+
+    bool m_sprayerSecondShot = false;
+
+    // ============================================
+    // Hunter
+    // ============================================
+
+    bool m_hunterSecondShotPending = false;
+
+    float m_hunterSecondShotRemainingTime = 0.0f;
 };

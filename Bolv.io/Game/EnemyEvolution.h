@@ -21,7 +21,8 @@ public:
         Assassin,
         Hunter,
         TripleShot,
-        QuadTank
+        QuadTank,
+        TwinFlank
     };
 
     // ============================================
@@ -39,7 +40,7 @@ public:
     };
 
     // ============================================
-    // レベルに応じた進化設定
+    // 進化設定
     // ============================================
 
     void Configure(
@@ -67,8 +68,6 @@ private:
 
     // ============================================
     // Sniper系のLv30進化抽選
-    //
-    // Assassin / Hunter
     // ============================================
 
     bool m_hasSniperEvolutionRoll =
@@ -77,11 +76,8 @@ private:
     TankClass m_sniperEvolutionResult =
         Assassin;
 
-
     // ============================================
     // Twin系のLv30進化抽選
-    //
-    // Triple Shot / Quad Tank
     // ============================================
 
     bool m_hasTwinEvolutionRoll =
@@ -89,4 +85,17 @@ private:
 
     TankClass m_twinEvolutionResult =
         TripleShot;
+
+
+    // ============================================
+    // Flank Guard系のLv30進化抽選
+    //
+    // Quad Tank / Twin Flank
+    // ============================================
+
+    bool m_hasFlankEvolutionRoll =
+        false;
+
+    TankClass m_flankEvolutionResult =
+        QuadTank;
 };
