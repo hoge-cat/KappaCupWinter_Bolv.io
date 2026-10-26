@@ -49,9 +49,20 @@ private:
 
     // ============================================
     // Sprayer
+    //
+    // 外側と内側の砲身を独立して管理する。
     // ============================================
 
-    bool m_sprayerSecondShot = false;
+    void UpdateSprayer(
+        Enemy& enemy,
+        const Vector3& position,
+        const Vector3& direction,
+        float deltaTime
+    );
+
+    float m_sprayerOuterRemainingTime = 0.0f;
+
+    float m_sprayerInnerRemainingTime = 0.0f;
 
     // ============================================
     // Hunter
