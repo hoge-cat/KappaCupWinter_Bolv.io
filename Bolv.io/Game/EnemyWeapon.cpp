@@ -826,15 +826,29 @@ void EnemyWeapon::UpdateSprayer(
 
 	direction.Normalize();
 
+
 	// ============================================
 	// Reloadステータス
 	//
-	// 現段階では敵のReloadステータスを
-	// 直接取得する関数を確認していないため、
-	// Lv0相当の値を使用する。
+	// 敵のステータスから現在のReloadレベルを取得。
+	// 0～7の範囲に制限する。
 	// ============================================
 
-	const int reloadLevel = 0;
+	int reloadLevel =
+		enemy.GetStats().GetLevel(
+			EnemyStats::Reload
+		);
+
+	if (reloadLevel < 0)
+	{
+		reloadLevel = 0;
+	}
+
+	if (reloadLevel > 7)
+	{
+		reloadLevel = 7;
+	}
+
 
 	const float outerInterval =
 		SPRAYER_OUTER_RELOAD_TICKS[reloadLevel] * 0.04f;
