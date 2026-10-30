@@ -1,9 +1,9 @@
+
 #include "stdafx.h"
 #include "WorldHealthBarRenderer.h"
 
 #include "Enemy.h"
 #include "ShapeBox.h"
-
 
 namespace
 {
@@ -11,58 +11,32 @@ namespace
     // HPバー基本サイズ
     // ============================================
 
-    const float BAR_HEIGHT =
-        7.0f;
-
+    const float BAR_HEIGHT = 7.0f;
 
     // ============================================
     // 背景を少し大きくする
     // ============================================
 
-    const float BACKGROUND_SCALE =
-        1.12f;
-
-
-    // ============================================
-    // 横方向だけスクリーン座標補正
-    //
-    // 1.0では画面端で内側へずれる。
-    // 1.5では外側へ行き過ぎた。
-    //
-    // まず1.15で確認。
-    // ============================================
-
-    const float SCREEN_POSITION_SCALE_X =
-        1.12f;
-
+    const float BACKGROUND_SCALE = 1.12f;
 
     // ============================================
     // ShapeBoxの中心補正
-    //
-    // 現在の当たり判定・モデル形状に合わせて
-    // Z方向へ少し補正。
     // ============================================
 
-    const float SHAPE_CENTER_OFFSET_Z =
-        21.0f;
-
+    const float SHAPE_CENTER_OFFSET_Z = 21.0f;
 
     // ============================================
     // Shape HPバー高さ
     // ============================================
 
-    const float SHAPE_HEALTH_BAR_HEIGHT =
-        58.0f;
-
+    const float SHAPE_HEALTH_BAR_HEIGHT = 58.0f;
 
     // ============================================
     // Enemy HPバー高さ
     // ============================================
 
-    const float ENEMY_HEALTH_BAR_HEIGHT =
-        72.0f;
+    const float ENEMY_HEALTH_BAR_HEIGHT = 72.0f;
 }
-
 
 // ============================================================
 // Start
@@ -70,64 +44,49 @@ namespace
 
 bool WorldHealthBarRenderer::Start()
 {
-    for (int i = 0;
-        i < MAX_HEALTH_BARS;
-        ++i)
+    for (int i = 0; i < MAX_HEALTH_BARS; ++i)
     {
         // ========================================
         // 背景
         // ========================================
 
-        m_healthBars[i]
-            .background
-            .Init(
-                "Assets/sprite/White.dds",
-                100.0f,
-                BAR_HEIGHT
-            );
+        m_healthBars[i].background.Init(
+            "Assets/sprite/White.dds",
+            100.0f,
+            BAR_HEIGHT
+        );
 
-
-        m_healthBars[i]
-            .background
-            .SetMulColor(
-                Vector4(
-                    0.15f,
-                    0.15f,
-                    0.15f,
-                    0.90f
-                )
-            );
-
+        m_healthBars[i].background.SetMulColor(
+            Vector4(
+                0.15f,
+                0.15f,
+                0.15f,
+                0.90f
+            )
+        );
 
         // ========================================
         // HP部分
         // ========================================
 
-        m_healthBars[i]
-            .health
-            .Init(
-                "Assets/sprite/White.dds",
-                100.0f,
-                BAR_HEIGHT
-            );
+        m_healthBars[i].health.Init(
+            "Assets/sprite/White.dds",
+            100.0f,
+            BAR_HEIGHT
+        );
 
-
-        m_healthBars[i]
-            .health
-            .SetMulColor(
-                Vector4(
-                    0.25f,
-                    0.85f,
-                    0.25f,
-                    1.0f
-                )
-            );
+        m_healthBars[i].health.SetMulColor(
+            Vector4(
+                0.25f,
+                0.85f,
+                0.25f,
+                1.0f
+            )
+        );
     }
-
 
     return true;
 }
-
 
 // ============================================================
 // DrawHealthBar
@@ -145,74 +104,53 @@ bool WorldHealthBarRenderer::DrawHealthBar(
     // Index確認
     // ============================================
 
-    if (index <
-        0 ||
-        index >=
-        MAX_HEALTH_BARS)
+    if (index < 0 || index >= MAX_HEALTH_BARS)
     {
         return false;
     }
-
 
     // ============================================
     // HP確認
     // ============================================
 
-    if (currentHP <=
-        0)
+    if (currentHP <= 0)
     {
         return false;
     }
 
-
-    if (maxHP <=
-        0)
+    if (maxHP <= 0)
     {
         return false;
     }
-
 
     // ============================================
     // HP満タンなら非表示
     // ============================================
 
-    if (currentHP >=
-        maxHP)
+    if (currentHP >= maxHP)
     {
         return false;
     }
-
 
     // ============================================
     // カメラより後ろなら非表示
     // ============================================
 
     const Vector3 toObject =
-        worldPosition -
-        g_camera3D
-        ->GetPosition();
-
+        worldPosition - g_camera3D->GetPosition();
 
     const Vector3 cameraForward =
-        g_camera3D
-        ->GetForward();
-
+        g_camera3D->GetForward();
 
     const float forwardDot =
-        toObject.x *
-        cameraForward.x +
-        toObject.y *
-        cameraForward.y +
-        toObject.z *
-        cameraForward.z;
+        toObject.x * cameraForward.x +
+        toObject.y * cameraForward.y +
+        toObject.z * cameraForward.z;
 
-
-    if (forwardDot <=
-        0.0f)
+    if (forwardDot <= 0.0f)
     {
         return false;
     }
-
 
     // ============================================
     // World → Screen
@@ -220,66 +158,65 @@ bool WorldHealthBarRenderer::DrawHealthBar(
 
     Vector2 screenPosition;
 
-
-    g_camera3D
-        ->CalcScreenPositionFromWorldPosition(
-            screenPosition,
-            worldPosition
-        );
-
+    g_camera3D->CalcScreenPositionFromWorldPosition(
+        screenPosition,
+        worldPosition
+    );
 
     // ============================================
-    // 横方向だけ補正
+    // 3D画面座標 → 2D描画座標
     //
-    // 縦方向はそのまま使う。
+    // 3D側はフレームバッファサイズを使用。
+    // 2D側はUI_SPACE_WIDTH / HEIGHTを使用。
+    //
+    // 解像度の違いによる位置ずれを補正する。
     // ============================================
 
-    screenPosition.x *=
-        SCREEN_POSITION_SCALE_X;
+    const float frameWidth =
+        static_cast<float>(
+            g_graphicsEngine->GetFrameBufferWidth()
+            );
 
+    const float frameHeight =
+        static_cast<float>(
+            g_graphicsEngine->GetFrameBufferHeight()
+            );
 
-    // screenPosition.y は補正しない。
+    if (frameWidth > 0.0f && frameHeight > 0.0f)
+    {
+        screenPosition.x *=
+            static_cast<float>(UI_SPACE_WIDTH) /
+            frameWidth;
 
+        screenPosition.y *=
+            static_cast<float>(UI_SPACE_HEIGHT) /
+            frameHeight;
+    }
 
     // ============================================
     // HP割合
     // ============================================
 
     float hpRate =
-        static_cast<float>(
-            currentHP
-            ) /
-        static_cast<float>(
-            maxHP
-            );
+        static_cast<float>(currentHP) /
+        static_cast<float>(maxHP);
 
-
-    if (hpRate <
-        0.0f)
+    if (hpRate < 0.0f)
     {
-        hpRate =
-            0.0f;
+        hpRate = 0.0f;
     }
 
-
-    if (hpRate >
-        1.0f)
+    if (hpRate > 1.0f)
     {
-        hpRate =
-            1.0f;
+        hpRate = 1.0f;
     }
-
 
     // ============================================
     // 背景
     // ============================================
 
     SpriteRender& background =
-        m_healthBars[
-            index
-        ]
-        .background;
-
+        m_healthBars[index].background;
 
     background.SetPosition(
         Vector3(
@@ -289,27 +226,16 @@ bool WorldHealthBarRenderer::DrawHealthBar(
         )
     );
 
-
     background.SetScale(
         Vector3(
-            width /
-            100.0f *
+            width / 100.0f * BACKGROUND_SCALE,
             BACKGROUND_SCALE,
-
-            BACKGROUND_SCALE,
-
             1.0f
         )
     );
 
-
     background.Update();
-
-
-    background.Draw(
-        rc
-    );
-
+    background.Draw(rc);
 
     // ============================================
     // HP部分
@@ -319,28 +245,16 @@ bool WorldHealthBarRenderer::DrawHealthBar(
     // ============================================
 
     const float healthWidth =
-        width *
-        hpRate;
-
+        width * hpRate;
 
     const float leftEdge =
-        screenPosition.x -
-        width *
-        0.5f;
-
+        screenPosition.x - width * 0.5f;
 
     const float healthCenterX =
-        leftEdge +
-        healthWidth *
-        0.5f;
-
+        leftEdge + healthWidth * 0.5f;
 
     SpriteRender& health =
-        m_healthBars[
-            index
-        ]
-        .health;
-
+        m_healthBars[index].health;
 
     health.SetPosition(
         Vector3(
@@ -350,30 +264,19 @@ bool WorldHealthBarRenderer::DrawHealthBar(
         )
     );
 
-
     health.SetScale(
         Vector3(
-            healthWidth /
-            100.0f,
-
+            healthWidth / 100.0f,
             1.0f,
-
             1.0f
         )
     );
 
-
     health.Update();
-
-
-    health.Draw(
-        rc
-    );
-
+    health.Draw(rc);
 
     return true;
 }
-
 
 // ============================================================
 // Render
@@ -382,9 +285,7 @@ bool WorldHealthBarRenderer::DrawHealthBar(
 void WorldHealthBarRenderer::Render(
     RenderContext& rc)
 {
-    int barIndex =
-        0;
-
+    int barIndex = 0;
 
     // ========================================================
     // Enemy
@@ -395,58 +296,42 @@ void WorldHealthBarRenderer::Render(
 
         [&](Enemy* enemy)
         {
-            if (enemy ==
-                nullptr)
+            if (enemy == nullptr)
             {
                 return true;
             }
 
-
-            if (enemy
-                ->IsDead())
+            if (enemy->IsDead())
             {
                 return true;
             }
 
-
-            if (barIndex >=
-                MAX_HEALTH_BARS)
+            if (barIndex >= MAX_HEALTH_BARS)
             {
                 return false;
             }
-
 
             // ====================================
             // 満タンなら非表示
             // ====================================
 
-            if (enemy
-                ->GetHP() >=
-                enemy
-                ->GetMaxHP())
+            if (enemy->GetHP() >= enemy->GetMaxHP())
             {
                 return true;
             }
 
-
             const float levelScale =
-                enemy
-                ->GetLevelScale();
-
+                enemy->GetLevelScale();
 
             // ====================================
             // Enemy頭上
             // ====================================
 
             Vector3 barPosition =
-                enemy
-                ->GetPosition();
-
+                enemy->GetPosition();
 
             barPosition.y +=
-                ENEMY_HEALTH_BAR_HEIGHT *
-                levelScale;
-
+                ENEMY_HEALTH_BAR_HEIGHT * levelScale;
 
             // ====================================
             // 描画
@@ -457,28 +342,19 @@ void WorldHealthBarRenderer::Render(
                     rc,
                     barIndex,
                     barPosition,
-
-                    enemy
-                    ->GetHP(),
-
-                    enemy
-                    ->GetMaxHP(),
-
-                    72.0f *
-                    levelScale
+                    enemy->GetHP(),
+                    enemy->GetMaxHP(),
+                    72.0f * levelScale
                 );
-
 
             if (drawn)
             {
                 ++barIndex;
             }
 
-
             return true;
         }
     );
-
 
     // ========================================================
     // ShapeBox
@@ -489,46 +365,41 @@ void WorldHealthBarRenderer::Render(
 
         [&](ShapeBox* shape)
         {
-            if (shape ==
-                nullptr)
+            if (shape == nullptr)
             {
                 return true;
             }
 
-
-            if (!shape
-                ->IsAlive())
+            if (!shape->IsAlive())
             {
                 return true;
             }
 
-
-            if (barIndex >=
-                MAX_HEALTH_BARS)
+            if (barIndex >= MAX_HEALTH_BARS)
             {
                 return false;
             }
-
 
             // ====================================
             // 満タンなら非表示
             // ====================================
 
-            if (!shape
-                ->IsDamaged())
+            if (!shape->IsDamaged())
             {
                 return true;
             }
 
+            if (barIndex >= MAX_HEALTH_BARS)
+            {
+                return false;
+            }
 
             // ====================================
             // Shapeの中心
             // ====================================
 
             Vector3 barPosition =
-                shape
-                ->GetPosition();
-
+                shape->GetPosition();
 
             // ====================================
             // ShapeBox中心補正
@@ -537,14 +408,12 @@ void WorldHealthBarRenderer::Render(
             barPosition.z +=
                 SHAPE_CENTER_OFFSET_Z;
 
-
             // ====================================
             // 頭上
             // ====================================
 
             barPosition.y +=
                 SHAPE_HEALTH_BAR_HEIGHT;
-
 
             // ====================================
             // 描画
@@ -555,22 +424,15 @@ void WorldHealthBarRenderer::Render(
                     rc,
                     barIndex,
                     barPosition,
-
-                    shape
-                    ->GetHP(),
-
-                    shape
-                    ->GetMaxHP(),
-
+                    shape->GetHP(),
+                    shape->GetMaxHP(),
                     55.0f
                 );
-
 
             if (drawn)
             {
                 ++barIndex;
             }
-
 
             return true;
         }
