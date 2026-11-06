@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Enemy.h"
 #include "Player.h"
+#include "AudioManager.h"
 
 #include <cmath>
 
@@ -873,6 +874,14 @@ void Enemy::TakeDamage(
 
 	m_hp =
 		0;
+
+
+	// 撃破確定時に一度だけSEを再生する。
+	// SoundSourceはワンショット再生終了後に自動削除される。
+	if (auto* audio = FindGO<AudioManager>("audioManager"))
+	{
+		audio->PlayDestroySE();
+	}
 
 
 	if (m_player !=
