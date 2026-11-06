@@ -6,10 +6,37 @@
 #include "Enemy.h"
 #include "EnemyBullet.h"
 #include "CollisionGrid.h"
+#include "AudioManager.h"
+
+#include <chrono>
 
 
 namespace
 {
+    // 同時に大量の弾が命中してもSEが重なりすぎないようにする。
+    // SoundSourceはワンショット再生後に自動削除されるため保持しない。
+    void PlayCollisionDamageSE()
+    {
+        using Clock = std::chrono::steady_clock;
+        static Clock::time_point lastPlayed;
+        const auto now = Clock::now();
+
+        if (lastPlayed != Clock::time_point{} &&
+            now - lastPlayed < std::chrono::milliseconds(80))
+        {
+            return;
+        }
+
+        AudioManager* audio = FindGO<AudioManager>("audioManager");
+        if (audio == nullptr)
+        {
+            return;
+        }
+
+        lastPlayed = now;
+        audio->PlayDamageSE();
+    }
+
     // ============================================
     // CollisionGrid検索時の余裕
     //
@@ -510,6 +537,9 @@ void Bullet::Update()
                     actualDamage
                 );
 
+            // 命中時のダメージSE（連続再生は共通で制限）
+            PlayCollisionDamageSE();
+
 
             // ====================================
             // Tank Body Damageによって
@@ -714,6 +744,9 @@ void Bullet::Update()
                 ->TakeDamage(
                     actualDamage
                 );
+
+            // 命中時のダメージSE（連続再生は共通で制限）
+            PlayCollisionDamageSE();
 
 
             // ====================================
