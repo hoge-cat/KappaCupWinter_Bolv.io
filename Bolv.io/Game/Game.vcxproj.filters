@@ -136,6 +136,9 @@
     <Filter Include="弾\トラップ">
       <UniqueIdentifier>{182da487-a468-4e19-b6a6-aa620230abf2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="音声">
+      <UniqueIdentifier>{59e94409-024f-4493-8ca4-244cc02daa2c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="system\system.cpp">
@@ -339,6 +342,9 @@
     <ClCompile Include="TrapRenderer.cpp">
       <Filter>弾\トラップ</Filter>
     </ClCompile>
+    <ClCompile Include="AudioManager.cpp">
+      <Filter>音声</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="system\system.h">
@@ -467,6 +473,9 @@
     </ClInclude>
     <ClInclude Include="TrapRenderer.h">
       <Filter>弾\トラップ</Filter>
+    </ClInclude>
+    <ClInclude Include="AudioManager.h">
+      <Filter>音声</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

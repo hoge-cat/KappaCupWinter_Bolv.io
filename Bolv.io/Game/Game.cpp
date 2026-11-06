@@ -1,3 +1,4 @@
+
 #include "stdafx.h"
 #include "Game.h"
 
@@ -19,41 +20,40 @@
 #include "WorldHealthBarRenderer.h"
 #include "Trap.h"
 #include "TrapRenderer.h"
+#include "AudioManager.h"
 
-
+// ============================================
+// デストラクタ
+// ============================================
 Game::~Game()
 {
     ClearGameObjects();
 }
 
-
+// ============================================
+// 初期化
+// ============================================
 bool Game::Start()
 {
-    // ============================================
+    // ========================================
     // CollisionGridを使用可能にする
-    // ============================================
+    // ========================================
+    g_collisionGrid = &m_collisionGrid;
 
-    g_collisionGrid =
-        &m_collisionGrid;
-
-
-    // ============================================
+    // ========================================
     // ゲームオブジェクト生成
-    // ============================================
-
+    // ========================================
     m_background =
         NewGO<Background>(
             0,
             "background"
         );
 
-
     m_player =
         NewGO<Player>(
             0,
             "player"
         );
-
 
     m_gameCamera =
         NewGO<GameCamera>(
@@ -67,12 +67,10 @@ bool Game::Start()
             "worldHealthBarRenderer"
         );
 
-    // ============================================
+    // ========================================
     // 図形
-    // ============================================
-
+    // ========================================
     m_shapeSpawner.CreateShapes();
-
 
     m_shapeBoxRenderer =
         NewGO<ShapeBoxRenderer>(
@@ -80,68 +78,50 @@ bool Game::Start()
             "shapeBoxRenderer"
         );
 
-
-    // ============================================
+    // ========================================
     // 自機弾Renderer
-    // ============================================
-
+    // ========================================
     m_bulletRenderer =
         NewGO<BulletRenderer>(
             0,
             "bulletRenderer"
         );
 
-
-    // ============================================
+    // ========================================
     // 敵弾Renderer
-    // ============================================
-
+    // ========================================
     m_enemyBulletRenderer =
         NewGO<EnemyBulletRenderer>(
             0,
             "enemyBulletRenderer"
         );
 
-
-    // ============================================
+    // ========================================
     // Trap Renderer
-    // ============================================
-
+    // ========================================
     m_trapRenderer =
         NewGO<TrapRenderer>(
             0,
             "trapRenderer"
         );
 
-
-    m_enemyRenderer =
-        NewGO<EnemyRenderer>(
-            0,
-            "enemyRenderer"
-        );
-
-
-    // ============================================
+    // ========================================
     // 敵Renderer
-    // ============================================
-
+    // ========================================
     m_enemyRenderer =
         NewGO<EnemyRenderer>(
             0,
             "enemyRenderer"
         );
 
-
-    // ============================================
+    // ========================================
     // UI
-    // ============================================
-
+    // ========================================
     m_playerHUD =
         NewGO<PlayerHUD>(
             1,
             "playerHUD"
         );
-
 
     m_playerEvolutionUI =
         NewGO<PlayerEvolutionUI>(
@@ -149,13 +129,11 @@ bool Game::Start()
             "playerEvolutionUI"
         );
 
-
     m_playerUpgradeUI =
         NewGO<PlayerUpgradeUI>(
             1,
             "playerUpgradeUI"
         );
-
 
     m_gameOverUI =
         NewGO<GameOverUI>(
@@ -163,233 +141,175 @@ bool Game::Start()
             "gameOverUI"
         );
 
+    // ========================================
+    // AudioManager
+    // ========================================
+    // AudioManager::Start()で音声を登録し、
+    // インゲームBGMを再生する
+    m_audioManager =
+        NewGO<AudioManager>(
+            0,
+            "audioManager"
+        );
 
-    // 最初のGridを作る。
+    // ========================================
+    // 最初のGridを作る
+    // ========================================
     m_collisionGrid.Rebuild();
-
 
     return true;
 }
 
-
+// ============================================
+// 更新
+// ============================================
 void Game::Update()
 {
-    // ============================================
+    // ========================================
     // 敵生成
-    // ============================================
-
-    if (m_player !=
-        nullptr)
+    // ========================================
+    if (m_player != nullptr)
     {
         m_enemySpawner.Update(
             *m_player
         );
     }
 
-
-    // ============================================
-    // 1フレームに1回だけ
-    // 衝突Gridを更新
-    // ============================================
-
+    // ========================================
+    // 1フレームに1回だけ衝突Gridを更新
+    // ========================================
     m_collisionGrid.Rebuild();
 }
 
-
-void Game::Render(
-    RenderContext& rc)
+// ============================================
+// 描画
+// ============================================
+void Game::Render(RenderContext& rc)
 {}
 
-
+// ============================================
+// ゲームオブジェクト削除
+// ============================================
 void Game::ClearGameObjects()
 {
-    // ============================================
-    // 発射済み自機弾
-    // ============================================
+    // ========================================
+    // AudioManager
+    // ========================================
+    if (m_audioManager != nullptr)
+    {
+        m_audioManager->StopBGM();
 
+        DeleteGO(m_audioManager);
+
+        m_audioManager = nullptr;
+    }
+
+    // ========================================
+    // 発射済み自機弾
+    // ========================================
     QueryGOs<Bullet>(
         "bullet",
         [](Bullet* bullet)
         {
-            DeleteGO(
-                bullet
-            );
-
+            DeleteGO(bullet);
             return true;
         }
     );
 
-
-    // ============================================
+    // ========================================
     // 発射済み敵弾
-    // ============================================
-
+    // ========================================
     QueryGOs<EnemyBullet>(
         "enemyBullet",
         [](EnemyBullet* bullet)
         {
-            DeleteGO(
-                bullet
-            );
-
+            DeleteGO(bullet);
             return true;
         }
     );
 
-
-    // ============================================
+    // ========================================
     // 発射済みTrap
-    // ============================================
-
+    // ========================================
     QueryGOs<Trap>(
         "trap",
         [](Trap* trap)
         {
-            DeleteGO(
-                trap
-            );
-
+            DeleteGO(trap);
             return true;
         }
     );
 
-
-    // ============================================
+    // ========================================
     // UI
-    // ============================================
+    // ========================================
+    DeleteGO(m_gameOverUI);
+    m_gameOverUI = nullptr;
 
-    DeleteGO(
-        m_gameOverUI
-    );
+    DeleteGO(m_playerUpgradeUI);
+    m_playerUpgradeUI = nullptr;
 
-    m_gameOverUI =
-        nullptr;
+    DeleteGO(m_playerEvolutionUI);
+    m_playerEvolutionUI = nullptr;
 
+    DeleteGO(m_playerHUD);
+    m_playerHUD = nullptr;
 
-    DeleteGO(
-        m_playerUpgradeUI
-    );
-
-    m_playerUpgradeUI =
-        nullptr;
-
-
-    DeleteGO(
-        m_playerEvolutionUI
-    );
-
-    m_playerEvolutionUI =
-        nullptr;
-
-
-    DeleteGO(
-        m_playerHUD
-    );
-
-    m_playerHUD =
-        nullptr;
-
-
-    // ============================================
+    // ========================================
     // 敵
-    // ============================================
-
+    // ========================================
     m_enemySpawner.Clear();
 
+    DeleteGO(m_enemyRenderer);
+    m_enemyRenderer = nullptr;
 
-    DeleteGO(
-        m_enemyRenderer
-    );
-
-    m_enemyRenderer =
-        nullptr;
-
-
-    // ============================================
+    // ========================================
     // カメラ
-    // ============================================
+    // ========================================
+    DeleteGO(m_gameCamera);
+    m_gameCamera = nullptr;
 
-    DeleteGO(
-        m_gameCamera
-    );
-
-    m_gameCamera =
-        nullptr;
-
-
-    // ============================================
+    // ========================================
     // 弾Renderer
-    // ============================================
+    // ========================================
+    DeleteGO(m_enemyBulletRenderer);
+    m_enemyBulletRenderer = nullptr;
 
-    DeleteGO(
-        m_enemyBulletRenderer
-    );
+    DeleteGO(m_trapRenderer);
+    m_trapRenderer = nullptr;
 
-    m_enemyBulletRenderer =
-        nullptr;
+    DeleteGO(m_bulletRenderer);
+    m_bulletRenderer = nullptr;
 
-
-    DeleteGO(
-        m_trapRenderer
-    );
-
-    m_trapRenderer =
-        nullptr;
-
-
-    DeleteGO(
-        m_bulletRenderer
-    );
-
-    m_bulletRenderer =
-        nullptr;
-
-
-    // ============================================
+    // ========================================
     // 図形
-    // ============================================
-
-    DeleteGO(
-        m_shapeBoxRenderer
-    );
-
-    m_shapeBoxRenderer =
-        nullptr;
-
+    // ========================================
+    DeleteGO(m_shapeBoxRenderer);
+    m_shapeBoxRenderer = nullptr;
 
     m_shapeSpawner.Clear();
 
-
-    // ============================================
+    // ========================================
     // Player
-    // ============================================
+    // ========================================
+    DeleteGO(m_player);
+    m_player = nullptr;
 
-    DeleteGO(
-        m_player
-    );
-
-    m_player =
-        nullptr;
-
-
-    // ============================================
+    // ========================================
     // 背景
-    // ============================================
+    // ========================================
+    DeleteGO(m_background);
+    m_background = nullptr;
 
-    DeleteGO(
-        m_background
-    );
+    // ========================================
+    // WorldHealthBarRenderer
+    // ========================================
+    DeleteGO(m_worldHealthBarRenderer);
+    m_worldHealthBarRenderer = nullptr;
 
-    m_background =
-        nullptr;
-
-
-    // ============================================
+    // ========================================
     // CollisionGrid
-    // ============================================
-
+    // ========================================
     m_collisionGrid.Clear();
-
-    g_collisionGrid =
-        nullptr;
+    g_collisionGrid = nullptr;
 }
