@@ -2,6 +2,7 @@
 #include "PlayerEvolutionUI.h"
 
 #include "Player.h"
+#include "AudioManager.h"
 #include "system/system.h"
 
 
@@ -403,6 +404,11 @@ void PlayerEvolutionUI::HandleEvolutionSelection()
                 tankClass
             ))
         {
+            if (auto* audio = FindGO<AudioManager>("audioManager"))
+            {
+                audio->PlayEvolveSE();
+            }
+
             OutputDebugStringA(
                 "Player evolved.\n"
             );
