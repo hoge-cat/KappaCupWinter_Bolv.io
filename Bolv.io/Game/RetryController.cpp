@@ -1,16 +1,24 @@
+
 #include "stdafx.h"
 #include "RetryController.h"
 #include "Game.h"
 #include "Player.h"
 #include "TitleUI.h"
+#include "LoadingScreen.h"
 #include "system/system.h"
 
+// ============================================
+// 開始
+// ============================================
 void RetryController::Start()
 {
     NewGO<TitleUI>(2, "titleUI");
     m_state = State::Title;
 }
 
+// ============================================
+// 更新
+// ============================================
 void RetryController::Update()
 {
     const bool isActive =
@@ -30,8 +38,10 @@ void RetryController::Update()
 
     const bool enterTriggered =
         enterPressed && !m_wasEnterPressed;
+
     const bool rTriggered =
         rPressed && !m_wasRPressed;
+
     const bool tTriggered =
         tPressed && !m_wasTPressed;
 
@@ -39,7 +49,9 @@ void RetryController::Update()
     m_wasRPressed = rPressed;
     m_wasTPressed = tPressed;
 
-    // 削除完了後に、次の画面を作る。
+    // ========================================
+    // 古いシーンの削除待ち
+    // ========================================
     if (m_state == State::WaitingForDeletion)
     {
         if (!AreOldObjectsDeleted())
@@ -50,17 +62,73 @@ void RetryController::Update()
         if (m_nextState == State::Title)
         {
             NewGO<TitleUI>(2, "titleUI");
+            m_state = State::Title;
         }
         else
         {
-            NewGO<Game>(0, "game");
+            // ロード画面を生成
+            NewGO<LoadingScreen>(2, "loadingScreen");
+
+            m_loadingFrames = 0;
+            m_state = State::Loading;
         }
 
-        m_state = m_nextState;
         return;
     }
 
-    // タイトルではEnterで開始する。
+    // ========================================
+// ロード画面
+// ========================================
+    if (m_state == State::Loading)
+    {
+        ++m_loadingFrames;
+
+        if (m_loadingFrames < 2)
+        {
+            return;
+        }
+
+        // ゲームを生成
+        NewGO<Game>(0, "game");
+
+        // ゲームの初期化はエンジン側で行われるため、
+        // 次のフレームで完了確認する
+        m_state = State::WaitingForGameReady;
+
+        return;
+    }
+
+    // ========================================
+    // ゲームの初期化完了待ち
+    // ========================================
+    if (m_state == State::WaitingForGameReady)
+    {
+        Game* game = FindGO<Game>("game");
+
+        if (game == nullptr)
+        {
+            return;
+        }
+
+        // BGM開始
+        game->StartGameBGM();
+
+        // ロード画面を削除
+        LoadingScreen* loading =
+            FindGO<LoadingScreen>("loadingScreen");
+
+        if (loading != nullptr)
+        {
+            DeleteGO(loading);
+        }
+
+        m_state = State::Playing;
+        return;
+    }
+
+    // ========================================
+    // タイトル画面
+    // ========================================
     if (m_state == State::Title)
     {
         if (enterTriggered)
@@ -72,6 +140,14 @@ void RetryController::Update()
         return;
     }
 
+    // ========================================
+    // インゲーム
+    // ========================================
+    if (m_state != State::Playing)
+    {
+        return;
+    }
+
     Player* player = FindGO<Player>("player");
 
     if (player == nullptr ||
@@ -80,7 +156,9 @@ void RetryController::Update()
         return;
     }
 
-    // ゲームオーバー時だけR・Tを受け付ける。
+    // ========================================
+    // ゲームオーバー時の入力
+    // ========================================
     if (tTriggered)
     {
         m_nextState = State::Title;
@@ -93,10 +171,17 @@ void RetryController::Update()
     }
 }
 
+// ============================================
+// 現在のシーンを削除
+// ============================================
 void RetryController::ClearCurrentScene()
 {
     TitleUI* title = FindGO<TitleUI>("titleUI");
-    DeleteGO(title);
+
+    if (title != nullptr)
+    {
+        DeleteGO(title);
+    }
 
     Game* game = FindGO<Game>("game");
 
@@ -109,6 +194,9 @@ void RetryController::ClearCurrentScene()
     m_state = State::WaitingForDeletion;
 }
 
+// ============================================
+// 古いオブジェクトの削除確認
+// ============================================
 bool RetryController::AreOldObjectsDeleted() const
 {
     const char* names[] =
@@ -123,7 +211,8 @@ bool RetryController::AreOldObjectsDeleted() const
         "enemy",
         "gameOverUI",
         "bullet",
-        "enemyBullet"
+        "enemyBullet",
+        "audioManager"
     };
 
     for (const char* name : names)

@@ -89,11 +89,7 @@ bool AudioManager::Start()
         "Assets/sound/se_upgrade.wav"
     );
 
-    // ========================================
-    // 登録完了後にBGM再生
-    // ========================================
-    PlayGameBGM();
-
+    // BGMはロード完了後に再生する
     return true;
 }
 

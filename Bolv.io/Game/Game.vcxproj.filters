@@ -139,6 +139,9 @@
     <Filter Include="音声">
       <UniqueIdentifier>{59e94409-024f-4493-8ca4-244cc02daa2c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="画面\ロード画面">
+      <UniqueIdentifier>{977cc33a-3677-4d3d-9db9-1d49c5e7e816}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="system\system.cpp">
@@ -345,6 +348,9 @@
     <ClCompile Include="AudioManager.cpp">
       <Filter>音声</Filter>
     </ClCompile>
+    <ClCompile Include="LoadingScreen.cpp">
+      <Filter>画面\ロード画面</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="system\system.h">
@@ -476,6 +482,9 @@
     </ClInclude>
     <ClInclude Include="AudioManager.h">
       <Filter>音声</Filter>
+    </ClInclude>
+    <ClInclude Include="LoadingScreen.h">
+      <Filter>画面\ロード画面</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

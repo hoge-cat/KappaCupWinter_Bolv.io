@@ -242,6 +242,7 @@
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameCamera.cpp" />
     <ClCompile Include="GameOverUI.cpp" />
+    <ClCompile Include="LoadingScreen.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PlayerContact.cpp" />
@@ -316,6 +317,7 @@
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameCamera.h" />
     <ClInclude Include="GameOverUI.h" />
+    <ClInclude Include="LoadingScreen.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="PlayerContact.h" />
     <ClInclude Include="PlayerEvolution.h" />

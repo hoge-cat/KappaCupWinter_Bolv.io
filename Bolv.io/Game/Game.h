@@ -36,6 +36,7 @@ public:
 	void Render(RenderContext& rc);
 
 	void ClearGameObjects();
+	void StartGameBGM();
 
 
 private:
