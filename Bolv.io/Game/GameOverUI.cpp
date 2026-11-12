@@ -45,12 +45,15 @@ void GameOverUI::Update()
     swprintf_s(
         text,
         256,
-        L"SCORE: %d   LEVEL: %d   [R] RETRY   [T] TITLE",
+        L"\u30b9\u30b3\u30a2\uff1a%d\u3000\u30ec\u30d9\u30eb\uff1a%d\u3000[R] \u518d\u6311\u6226\u3000[T] \u30bf\u30a4\u30c8\u30eb\u3078",
         m_player->GetScore(),
         progress.GetLevel()
     );
 
     m_resultFontRender.SetText(text);
+    const Vector2 size = g_graphicsEngine->GetFontEngine().MeasureText(text);
+    m_resultFontRender.SetPivot(size.x * 0.5f, 1.0f - size.y * 0.5f);
+    m_resultFontRender.SetPosition(Vector3(0.0f, -130.0f, 0.0f));
 
     // ゲーム終了時の結果を一度だけ記録する。
     m_resultFixed = true;

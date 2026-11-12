@@ -42,7 +42,7 @@ bool TitleUI::Start()
     m_logo.Init("Assets/sprite/BolvLogo.DDS", 880.0f, 880.0f * 793.0f / 1983.0f);
     PlaceSprite(m_logo, 315.0f);
     m_logo.Update();
-    CenterText(m_subtitleFont, L"3D TANK ARENA", 0.8f, 180.0f);
+    CenterText(m_subtitleFont, L"3D\u6226\u8eca\u30b7\u30e5\u30fc\u30c6\u30a3\u30f3\u30b0", 0.8f, 180.0f);
     m_subtitleFont.SetColor(Vector4(0.48f, 0.62f, 0.73f, 1.0f));
     const wchar_t* labels[] = {
         L"\u30b2\u30fc\u30e0\u30b9\u30bf\u30fc\u30c8",
@@ -61,13 +61,13 @@ bool TitleUI::Start()
     }
     CenterText(m_comingSoonFont, L"\u6e96\u5099\u4e2d", 0.55f, BUTTON_Y[1] - 22.0f);
     m_comingSoonFont.SetColor(Vector4(0.36f, 0.44f, 0.52f, 1.0f));
-    CenterText(m_hintFont, L"MOUSE / WASD / UP DOWN / TAB    ENTER : SELECT", 0.55f, -465.0f);
+    CenterText(m_hintFont, L"WASD\u30fb\u4e0a\u4e0b\u30ad\u30fc\u30fbTab\uff1a\u9078\u629e\u3000Enter\uff0fSpace\uff1a\u6c7a\u5b9a\u3000\u5de6\u30af\u30ea\u30c3\u30af\u3067\u3082\u64cd\u4f5c\u53ef\u80fd", 0.55f, -465.0f);
     m_hintFont.SetColor(Vector4(0.35f, 0.46f, 0.57f, 1.0f));
     GetCursorPos(&m_lastMouse);
     m_wasMousePressed = Pressed(VK_LBUTTON);
     m_wasEnterPressed = Pressed(VK_RETURN) || Pressed(VK_SPACE);
-    m_wasUpPressed = Pressed(VK_UP) || Pressed('W') || Pressed('A');
-    m_wasDownPressed = Pressed(VK_DOWN) || Pressed(VK_TAB) || Pressed('S') || Pressed('D');
+    m_navigationBlocked = Pressed(VK_UP) || Pressed('W') || Pressed('A') ||
+        Pressed(VK_DOWN) || Pressed(VK_TAB) || Pressed('S') || Pressed('D');
     UpdateColors();
     return true;
 }
@@ -93,6 +93,49 @@ void TitleUI::UpdateColors()
     }
 }
 
+void TitleUI::UpdateNavigation(bool up, bool down, bool active, float deltaTime)
+{
+    constexpr float INPUT_INTERVAL = 0.20f;
+    constexpr float FIRST_REPEAT_DELAY = 0.40f;
+    m_navigationCooldown -= deltaTime;
+    if (m_navigationCooldown < 0.0f) { m_navigationCooldown = 0.0f; }
+    if (!active)
+    {
+        m_navigationBlocked = true;
+    }
+    if (m_navigationBlocked)
+    {
+        if (active && !up && !down) { m_navigationBlocked = false; }
+        m_navigationDirection = 0;
+        return;
+    }
+    const int direction = up == down ? 0 : (up ? -1 : 1);
+    if (direction == 0)
+    {
+        m_navigationDirection = 0;
+        return;
+    }
+    bool navigate = false;
+    if (direction != m_navigationDirection)
+    {
+        m_navigationDirection = direction;
+        m_navigationRepeat = FIRST_REPEAT_DELAY;
+        navigate = m_navigationCooldown <= 0.000001f;
+    }
+    else
+    {
+        m_navigationRepeat -= deltaTime;
+        navigate = m_navigationRepeat <= 0.000001f && m_navigationCooldown <= 0.000001f;
+    }
+    if (navigate)
+    {
+        // Share the cooldown across keys and directions; never catch up in a loop.
+        m_selected = m_selected == 0 ? 2 : 0;
+        m_navigationCooldown = INPUT_INTERVAL;
+        if (m_navigationRepeat <= 0.000001f) { m_navigationRepeat = INPUT_INTERVAL; }
+    }
+}
+
 void TitleUI::Update()
 {
     const bool active = GetForegroundWindow() == g_hWnd;
@@ -115,10 +158,7 @@ void TitleUI::Update()
             if (moved && hovered != -1 && hovered != 1) { m_selected = hovered; }
         }
     }
-    if (active && ((upPressed && !m_wasUpPressed) || (downPressed && !m_wasDownPressed)))
-    {
-        m_selected = m_selected == 0 ? 2 : 0;
-    }
+    UpdateNavigation(upPressed, downPressed, active, g_gameTime->GetFrameDeltaTime());
     const bool clicked = active && mousePressed && !m_wasMousePressed && hovered != -1 && hovered != 1;
     const bool confirmed = active && enterPressed && !m_wasEnterPressed;
     if (clicked) { m_selected = hovered; }
@@ -128,8 +168,6 @@ void TitleUI::Update()
     }
     m_wasMousePressed = mousePressed;
     m_wasEnterPressed = enterPressed;
-    m_wasUpPressed = upPressed;
-    m_wasDownPressed = downPressed;
     UpdateColors();
 }
 
