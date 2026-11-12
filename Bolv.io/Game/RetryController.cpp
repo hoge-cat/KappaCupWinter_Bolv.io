@@ -4,6 +4,7 @@
 #include "Game.h"
 #include "Player.h"
 #include "TitleUI.h"
+#include "ClearResultUI.h"
 #include "LoadingScreen.h"
 #include "AudioManager.h"
 #include "system/system.h"
@@ -15,6 +16,7 @@ void RetryController::Start()
 {
     CreateTitleScene();
     m_state = State::Title;
+    m_wasF3Pressed = (GetAsyncKeyState(VK_F3) & 0x8000) != 0;
 }
 
 // ============================================
@@ -43,6 +45,10 @@ void RetryController::Update()
     const bool tTriggered =
         tPressed && !m_wasTPressed;
 
+    const bool f3Pressed = (GetAsyncKeyState(VK_F3) & 0x8000) != 0;
+    const bool clearTriggered = isActive && f3Pressed && !m_wasF3Pressed;
+    m_wasF3Pressed = f3Pressed;
+
     m_wasEnterPressed = enterPressed;
     m_wasRPressed = rPressed;
     m_wasTPressed = tPressed;
@@ -61,6 +67,12 @@ void RetryController::Update()
         {
             CreateTitleScene();
             m_state = State::Title;
+        }
+        else if (m_nextState == State::ClearResult)
+        {
+            auto* result = NewGO<ClearResultUI>(2, "clearResultUI");
+            result->SetResult(m_clearScore, m_clearLevel);
+            m_state = State::ClearResult;
         }
         else
         {
@@ -150,12 +162,36 @@ void RetryController::Update()
     // ========================================
     // インゲーム
     // ========================================
+    if (m_state == State::ClearResult)
+    {
+        auto* result = FindGO<ClearResultUI>("clearResultUI");
+        if (!result || !result->IsStart()) { return; }
+        const auto action = result->ConsumeAction();
+        if (action != ClearResultUI::Action::None)
+        {
+            AudioManager::PlaySelectSE();
+            m_nextState = action == ClearResultUI::Action::Retry ? State::Playing : State::Title;
+            ClearCurrentScene();
+        }
+        return;
+    }
+
     if (m_state != State::Playing)
     {
         return;
     }
 
     Player* player = FindGO<Player>("player");
+
+    if (clearTriggered && player != nullptr && !player->GetHealth().IsDead())
+    {
+        // Snapshot before deleting gameplay; a clear never damages or kills the player.
+        m_clearScore = player->GetScore();
+        m_clearLevel = player->GetProgress().GetLevel();
+        m_nextState = State::ClearResult;
+        ClearCurrentScene();
+        return;
+    }
 
     if (player == nullptr ||
         !player->GetHealth().IsDead())
@@ -191,6 +227,7 @@ void RetryController::CreateTitleScene()
 // ============================================
 void RetryController::ClearCurrentScene()
 {
+    if (auto* result = FindGO<ClearResultUI>("clearResultUI")) { DeleteGO(result); }
     if (auto* audio = FindGO<AudioManager>("titleAudioManager"))
     {
         audio->StopBGM();
@@ -222,6 +259,8 @@ bool RetryController::AreOldObjectsDeleted() const
 {
     const char* names[] =
     {
+        "clearResultUI",
+        "bulletImpact",
         "titleUI",
         "titleAudioManager",
         "game",

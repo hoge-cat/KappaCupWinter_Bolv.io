@@ -217,6 +217,7 @@
     <ClCompile Include="PlayerEvolutionUI.cpp">
       <Filter>画面\進化UI</Filter>
     </ClCompile>
+    <ClCompile Include="ClearResultUI.cpp" />
     <ClCompile Include="TitleUI.cpp">
       <Filter>画面\タイトル</Filter>
     </ClCompile>
@@ -433,6 +434,7 @@
     <ClInclude Include="PlayerEvolutionUI.h">
       <Filter>画面\進化UI</Filter>
     </ClInclude>
+    <ClInclude Include="ClearResultUI.h" />
     <ClInclude Include="TitleUI.h">
       <Filter>画面\タイトル</Filter>
     </ClInclude>

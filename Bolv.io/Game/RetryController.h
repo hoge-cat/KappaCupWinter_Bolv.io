@@ -13,6 +13,7 @@ private:
         Loading,
         WaitingForGameReady,
         Playing,
+        ClearResult,
         WaitingForDeletion
     };
 
@@ -26,6 +27,9 @@ private:
     bool m_wasEnterPressed = false;
     bool m_wasRPressed = false;
     bool m_wasTPressed = false;
+    bool m_wasF3Pressed = false;
+    int m_clearScore = 0;
+    int m_clearLevel = 1;
 
     // ロード画面を最低1フレーム表示するための管理
     int m_loadingFrames = 0;

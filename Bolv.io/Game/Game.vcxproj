@@ -295,6 +295,7 @@
     <ClCompile Include="TankWeaponTripleShot.cpp" />
     <ClCompile Include="TankWeaponTwinFlank.cpp" />
     <ClCompile Include="TitleUI.cpp" />
+    <ClCompile Include="ClearResultUI.cpp" />
     <ClCompile Include="TankWeaponTwin.cpp" />
     <ClCompile Include="Trap.cpp" />
     <ClCompile Include="TrapRenderer.cpp" />
@@ -351,6 +352,7 @@
     <ClInclude Include="TankVisual.h" />
     <ClInclude Include="TankWeapon.h" />
     <ClInclude Include="TitleUI.h" />
+    <ClInclude Include="ClearResultUI.h" />
     <ClInclude Include="Trap.h" />
     <ClInclude Include="TrapRenderer.h" />
     <ClInclude Include="WorldHealthBarRenderer.h" />
