@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "GameOverUI.h"
 #include "Player.h"
+#include "AudioManager.h"
 #include <cwchar>
 
 bool GameOverUI::Start()
@@ -53,6 +54,11 @@ void GameOverUI::Update()
 
     // ゲーム終了時の結果を一度だけ記録する。
     m_resultFixed = true;
+
+    if (auto* audio = FindGO<AudioManager>("audioManager"))
+    {
+        audio->PlayGameOverSE();
+    }
 }
 
 void GameOverUI::Render(RenderContext& rc)
