@@ -52,7 +52,7 @@ void TankVisual::UpdateSprayer(
     };
 
 
-    ModelRender* barrels[5] =
+    RecoilBarrelRender* barrels[5] =
     {
         &m_barrelRender1,
         &m_barrelRender2,

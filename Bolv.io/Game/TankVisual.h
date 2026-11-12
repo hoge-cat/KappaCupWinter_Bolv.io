@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "PlayerEvolution.h"
+#include <array>
 
 
 // ============================================================
@@ -12,6 +13,8 @@ class TankVisual
 public:
 
     void Init();
+    void OnShotFired(const Vector3& muzzlePosition, const Vector3& direction,
+        float bulletSizeMultiplier = 1.0f);
 
 
     void Update(
@@ -42,8 +45,11 @@ public:
         PlayerEvolution::TankClass tankClass
     )
     {
-        m_tankClass =
-            tankClass;
+        if (m_tankClass != tankClass)
+        {
+            m_tankClass = tankClass;
+            ResetRecoil();
+        }
     }
 
 
@@ -239,6 +245,29 @@ private:
 
 private:
 
+    // Visual-only barrel transforms; collision and muzzle positions stay unchanged.
+    class RecoilBarrelRender : public ModelRender
+    {
+    public:
+        void SetPosition(const Vector3& position);
+        void SetRotation(const Quaternion& rotation);
+        void Kick(float distance);
+        void AdvanceRecoil(float deltaTime);
+        void ResetRecoil();
+        const Vector3& GetRestPosition() const { return m_restPosition; }
+        const Vector3& GetForward() const { return m_forward; }
+
+    private:
+        void ApplyRecoil();
+        Vector3 m_restPosition = Vector3::Zero;
+        Vector3 m_forward = Vector3(0.0f, 0.0f, -1.0f);
+        float m_recoilTime = 0.0f;
+        float m_recoilDistance = 0.0f;
+    };
+
+    std::array<RecoilBarrelRender*, 7> GetBarrels();
+    void ResetRecoil();
+
     // ========================================================
     // Body
     // ========================================================
@@ -250,29 +279,29 @@ private:
     // 通常砲身
     // ========================================================
 
-    ModelRender m_barrelRender1;
+    RecoilBarrelRender m_barrelRender1;
 
-    ModelRender m_barrelRender2;
+    RecoilBarrelRender m_barrelRender2;
 
-    ModelRender m_barrelRender3;
+    RecoilBarrelRender m_barrelRender3;
 
-    ModelRender m_barrelRender4;
+    RecoilBarrelRender m_barrelRender4;
 
-    ModelRender m_barrelRender5;
+    RecoilBarrelRender m_barrelRender5;
 
 
     // ========================================================
     // Machine Gun
     // ========================================================
 
-    ModelRender m_machineGunBarrelRender;
+    RecoilBarrelRender m_machineGunBarrelRender;
 
 
     // ========================================================
     // Trapper
     // ========================================================
 
-    ModelRender m_trapperBarrelRender;
+    RecoilBarrelRender m_trapperBarrelRender;
 
 
     // ========================================================

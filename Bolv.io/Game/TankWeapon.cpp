@@ -1181,6 +1181,11 @@ void TankWeapon::Fire(
         bulletScale
     );
 
+    if (player != nullptr)
+    {
+        player->NotifyShotFired(firePosition, direction, bulletSizeMultiplier);
+    }
+
     // 弾の生成成功時に射撃SEを再生する。
     // 連射・複数砲身による音の重なりはAudioManager側で制御する。
     AudioManager* audioManager = FindGO<AudioManager>("audioManager");

@@ -3,6 +3,126 @@
 
 #include <cmath>
 
+void TankVisual::RecoilBarrelRender::SetPosition(const Vector3& position)
+{
+    m_restPosition = position;
+    ApplyRecoil();
+}
+
+void TankVisual::RecoilBarrelRender::SetRotation(const Quaternion& rotation)
+{
+    ModelRender::SetRotation(rotation);
+    m_forward = Vector3(0.0f, 0.0f, -1.0f);
+    rotation.Apply(m_forward);
+    m_forward.Normalize();
+    ApplyRecoil();
+}
+
+void TankVisual::RecoilBarrelRender::ApplyRecoil()
+{
+    const float phase = m_recoilTime / 0.14f;
+    ModelRender::SetPosition(m_restPosition - m_forward *
+        (m_recoilDistance * phase * phase));
+}
+
+void TankVisual::RecoilBarrelRender::Kick(float distance)
+{
+    // A new shot resets the kick instead of accumulating displacement.
+    m_recoilTime = 0.14f;
+    m_recoilDistance = distance;
+    ApplyRecoil();
+    ModelRender::Update();
+}
+
+void TankVisual::RecoilBarrelRender::AdvanceRecoil(float deltaTime)
+{
+    m_recoilTime -= deltaTime;
+    if (m_recoilTime < 0.0f)
+    {
+        m_recoilTime = 0.0f;
+    }
+    ApplyRecoil();
+}
+
+void TankVisual::RecoilBarrelRender::ResetRecoil()
+{
+    m_recoilTime = 0.0f;
+    m_recoilDistance = 0.0f;
+    ApplyRecoil();
+}
+
+std::array<TankVisual::RecoilBarrelRender*, 7> TankVisual::GetBarrels()
+{
+    return {{ &m_barrelRender1, &m_barrelRender2, &m_barrelRender3,
+        &m_barrelRender4, &m_barrelRender5, &m_machineGunBarrelRender,
+        &m_trapperBarrelRender }};
+}
+
+void TankVisual::ResetRecoil()
+{
+    for (auto* barrel : GetBarrels())
+    {
+        barrel->ResetRecoil();
+    }
+}
+
+void TankVisual::OnShotFired(const Vector3& muzzlePosition,
+    const Vector3& direction, float bulletSizeMultiplier)
+{
+    auto barrels = GetBarrels();
+    int count = 1;
+    switch (m_tankClass)
+    {
+    case PlayerEvolution::Smasher:
+        return;
+    case PlayerEvolution::MachineGun:
+        barrels[0] = &m_machineGunBarrelRender;
+        break;
+    case PlayerEvolution::Trapper:
+        barrels[0] = &m_trapperBarrelRender;
+        break;
+    case PlayerEvolution::Hunter:
+        barrels[0] = bulletSizeMultiplier < 1.0f ?
+            &m_barrelRender2 : &m_barrelRender1;
+        break;
+    case PlayerEvolution::Twin:
+    case PlayerEvolution::FlankGuard:
+        count = 2;
+        break;
+    case PlayerEvolution::TripleShot:
+        count = 3;
+        break;
+    case PlayerEvolution::QuadTank:
+    case PlayerEvolution::TwinFlank:
+        count = 4;
+        break;
+    case PlayerEvolution::Sprayer:
+        count = 5;
+        break;
+    default:
+        break;
+    }
+
+    // Match the actual shot to the rendered barrel by facing and lateral offset.
+    RecoilBarrelRender* selected = barrels[0];
+    float bestScore = 1.0e30f;
+    for (int i = 0; i < count; ++i)
+    {
+        const Vector3& forward = barrels[i]->GetForward();
+        const float alignment = forward.x * direction.x + forward.z * direction.z;
+        const Vector3 offset = muzzlePosition - barrels[i]->GetRestPosition();
+        const float lateral = offset.x * forward.z - offset.z * forward.x;
+        const float score = (1.0f - alignment) * 10000.0f + lateral * lateral;
+        if (score < bestScore)
+        {
+            bestScore = score;
+            selected = barrels[i];
+        }
+    }
+    selected->Kick(5.0f * m_levelScale);
+}
+
+
 
 namespace
 {
@@ -215,6 +335,11 @@ void TankVisual::Update(
     const Vector3& position,
     const Vector3& aimDirection)
 {
+    for (auto* barrel : GetBarrels())
+    {
+        barrel->AdvanceRecoil(g_gameTime->GetFrameDeltaTime());
+    }
+
     // ============================================
     // 戦車中央位置
     // ============================================
