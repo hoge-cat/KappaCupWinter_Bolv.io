@@ -22,6 +22,8 @@ public:
     void PlayGameOverSE();
     void PlayLevelUpSE();
     static void PlaySelectSE();
+    static void PlayTitleFlybySE();
+    static void PlayTitleBricksSE();
     void PlayUpgradeSE();
 
 private:

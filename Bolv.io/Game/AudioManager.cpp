@@ -158,3 +158,25 @@ void AudioManager::PlaySelectSE()
     PlaySE(SE_SELECT);
 }
 void AudioManager::PlayUpgradeSE() { PlaySE(SE_UPGRADE); }
+
+
+void AudioManager::PlayTitleFlybySE()
+{
+    // Optional assets: do not register a missing file with the sound engine.
+    const char* path = "Assets/sound/se_title_flyby.wav";
+    const DWORD attributes = GetFileAttributesA(path);
+    if (attributes == INVALID_FILE_ATTRIBUTES || (attributes & FILE_ATTRIBUTE_DIRECTORY)) { return; }
+    constexpr int bank = 10;
+    g_soundEngine->ResistWaveFileBank(bank, path);
+    PlaySE(bank);
+}
+
+void AudioManager::PlayTitleBricksSE()
+{
+    const char* path = "Assets/sound/se_title_bricks.wav";
+    const DWORD attributes = GetFileAttributesA(path);
+    if (attributes == INVALID_FILE_ATTRIBUTES || (attributes & FILE_ATTRIBUTE_DIRECTORY)) { return; }
+    constexpr int bank = 11;
+    g_soundEngine->ResistWaveFileBank(bank, path);
+    PlaySE(bank);
+}

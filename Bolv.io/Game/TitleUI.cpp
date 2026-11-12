@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "TitleUI.h"
+#include "AudioManager.h"
 #include "system/system.h"
 #include <cmath>
 
@@ -68,6 +69,15 @@ bool TitleUI::Start()
     m_wasEnterPressed = Pressed(VK_RETURN) || Pressed(VK_SPACE);
     m_navigationBlocked = Pressed(VK_UP) || Pressed('W') || Pressed('A') ||
         Pressed(VK_DOWN) || Pressed(VK_TAB) || Pressed('S') || Pressed('D');
+    for (auto& brick : m_bricks) { brick.Init("Assets/sprite/White.dds", 124, 94); }
+    for (int i = 0; i < 9; ++i)
+    {
+        const float y = (i - 4) * 4.0f;
+        m_introBullet[i].Init("Assets/sprite/White.dds", 2.0f * std::sqrt(400.0f - y * y), 4);
+        m_introBullet[i].SetMulColor(Vector4(0.08f, 0.73f, 0.93f, 1));
+    }
+    for (auto& dust : m_dust) { dust.Init("Assets/sprite/White.dds", 4, 4); }
+    UpdatePresentation(0);
     UpdateColors();
     return true;
 }
@@ -143,6 +153,20 @@ void TitleUI::Update()
     const bool enterPressed = Pressed(VK_RETURN) || Pressed(VK_SPACE);
     const bool upPressed = Pressed(VK_UP) || Pressed('W') || Pressed('A');
     const bool downPressed = Pressed(VK_DOWN) || Pressed(VK_TAB) || Pressed('S') || Pressed('D');
+    UpdatePresentation(active ? g_gameTime->GetFrameDeltaTime() : 0.0f);
+    if (m_presentationTime < 2.6f)
+    {
+        if (active && ((enterPressed && !m_wasEnterPressed) || (mousePressed && !m_wasMousePressed)))
+        {
+            m_presentationTime = 2.6f;
+            UpdatePresentation(0);
+        }
+        m_wasMousePressed = mousePressed;
+        m_wasEnterPressed = enterPressed;
+        m_navigationBlocked = true;
+        GetCursorPos(&m_lastMouse);
+        return;
+    }
     POINT mouse;
     int hovered = -1;
     if (active && GetCursorPos(&mouse))
@@ -181,6 +205,8 @@ TitleUI::Action TitleUI::ConsumeAction()
 void TitleUI::Render(RenderContext& rc)
 {
     m_background.Draw(rc);
+    for (auto& dust : m_dust) { dust.Draw(rc); }
+    if (m_presentationTime < 0.70f) { DrawPresentation(rc); return; }
     for (int i = 0; i < 3; ++i)
     {
         m_buttonBorders[i].Draw(rc);
@@ -191,4 +217,80 @@ void TitleUI::Render(RenderContext& rc)
     for (auto& label : m_buttonLabels) { label.Draw(rc); }
     m_comingSoonFont.Draw(rc);
     m_hintFont.Draw(rc);
+    DrawPresentation(rc);
+}
+
+void TitleUI::UpdatePresentation(float deltaTime)
+{
+    // Use the fixed UI space, independently of monitor resolution.
+    if (deltaTime < 0) { deltaTime = 0; }
+    if (deltaTime > 0.05f) { deltaTime = 0.05f; }
+    const float previousTime = m_presentationTime;
+    m_presentationTime += deltaTime;
+    const float clock = m_presentationTime;
+    // Trigger each cue only when its visual event is crossed; skipping omits intro cues.
+    if (previousTime < 0.05f && clock >= 0.05f && clock < 0.70f)
+    {
+        AudioManager::PlayTitleFlybySE();
+    }
+    if (previousTime < 0.70f && clock >= 0.70f && clock < 2.6f)
+    {
+        AudioManager::PlayTitleBricksSE();
+    }
+    if (clock >= 2.6f && !m_titleBGMStarted)
+    {
+        if (auto* audio = FindGO<AudioManager>("titleAudioManager"))
+        {
+            audio->PlayTitleBGM();
+            m_titleBGMStarted = true;
+        }
+    }
+    m_logo.SetPosition(Vector3(0, 315 + std::sin(clock * 1.2f) * 4, 0));
+    m_logo.Update();
+    for (int i = 0; i < 24; ++i)
+    {
+        const float x = std::fmod(i * 137.0f + clock * (8 + i % 5), 2040.0f) - 1020;
+        const float y = std::fmod(i * 193.0f + clock * (12 + i % 7), 1200.0f) - 600;
+        const float alpha = std::fabs(x) < 490 ? 0.08f : 0.25f;
+        m_dust[i].SetPosition(Vector3(x, y, 0));
+        m_dust[i].SetMulColor(Vector4(0.18f, 0.65f, 0.78f, alpha));
+        m_dust[i].Update();
+    }
+    if (clock >= 2.6f) { return; }
+    for (int i = 0; i < BRICK_COUNT; ++i)
+    {
+        const int row = i / 17;
+        const float x = (i % 17 - 8) * 128.0f + (row % 2) * 64.0f;
+        const float y = 550.0f - row * 98.0f;
+        const float distance = std::sqrt(x * x + y * y);
+        const float delay = 0.70f + distance / 2600.0f;
+        const float age = clock > delay ? clock - delay : 0.0f;
+        const float direction = x < 0 ? -1.0f : 1.0f;
+        const float vx = x * 1.4f + direction * (80 + i % 5 * 25);
+        const float vy = y * 1.1f + 140 + i % 7 * 25;
+        m_bricks[i].SetPosition(Vector3(x + vx * age, y + vy * age - 700 * age * age, 0));
+        const float shrink = 1.0f / (1.0f + age * 0.7f);
+        m_bricks[i].SetScale(Vector3(shrink, shrink, 1));
+        float alpha = 1.0f - age / 1.2f;
+        if (alpha < 0) { alpha = 0; }
+        const float shade = (i * 17 % 9) * 0.012f;
+        m_bricks[i].SetMulColor(Vector4(0.28f + shade, 0.16f + shade, 0.12f + shade, alpha));
+        m_bricks[i].Update();
+    }
+    const float flight = clock / 0.70f;
+    for (int i = 0; i < 9; ++i)
+    {
+        m_introBullet[i].SetPosition(Vector3(-1080 + flight * 1080, (i - 4) * 4.0f, 0));
+        m_introBullet[i].Update();
+    }
+}
+
+void TitleUI::DrawPresentation(RenderContext& rc)
+{
+    if (m_presentationTime >= 2.6f) { return; }
+    for (auto& brick : m_bricks) { brick.Draw(rc); }
+    if (m_presentationTime < 0.70f)
+    {
+        for (auto& slice : m_introBullet) { slice.Draw(rc); }
+    }
 }

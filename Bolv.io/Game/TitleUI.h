@@ -11,6 +11,14 @@ public:
     Action ConsumeAction();
 
 private:
+    void UpdatePresentation(float deltaTime);
+    void DrawPresentation(RenderContext& rc);
+    static constexpr int BRICK_COUNT = 204;
+    std::array<SpriteRender, BRICK_COUNT> m_bricks;
+    std::array<SpriteRender, 9> m_introBullet;
+    std::array<SpriteRender, 24> m_dust;
+    float m_presentationTime = 0.0f;
+    bool m_titleBGMStarted = false;
     int HitTest(float x, float y) const;
     void UpdateColors();
     void UpdateNavigation(bool up, bool down, bool active, float deltaTime);

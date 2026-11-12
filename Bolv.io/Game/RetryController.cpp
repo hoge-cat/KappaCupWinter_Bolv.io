@@ -183,10 +183,7 @@ void RetryController::Update()
 void RetryController::CreateTitleScene()
 {
     NewGO<TitleUI>(2, "titleUI");
-    if (auto* audio = NewGO<AudioManager>(0, "titleAudioManager"))
-    {
-        audio->PlayTitleBGM();
-    }
+    NewGO<AudioManager>(0, "titleAudioManager");
 }
 
 // ============================================
