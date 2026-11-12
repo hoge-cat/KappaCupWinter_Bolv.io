@@ -8,6 +8,7 @@
 #include "PlayerContact.h"
 #include "PlayerStats.h"
 #include "PlayerEvolution.h"
+#include "AudioManager.h"
 
 
 class Player : public IGameObject
@@ -373,6 +374,11 @@ public:
                 );
         }
 
+
+        if (auto* audio = FindGO<AudioManager>("audioManager"))
+        {
+            audio->PlayUpgradeSE();
+        }
 
         return true;
     }
