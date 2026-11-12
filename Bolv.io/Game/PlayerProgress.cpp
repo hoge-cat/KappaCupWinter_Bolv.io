@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "PlayerProgress.h"
+#include "AudioManager.h"
 #include <cstdio>
 
 int PlayerProgress::GetRequiredExperience() const
@@ -71,6 +72,8 @@ void PlayerProgress::AddExperience(int amount)
 
     // 一気に大量の経験値を獲得した場合でも
     // 複数レベル上がれるようにする。
+    const int previousLevel = m_level;
+
     while (m_level < 45)
     {
         const int requiredExperience =
@@ -117,6 +120,14 @@ void PlayerProgress::AddExperience(int amount)
         );
 
         OutputDebugStringA(message);
+    }
+
+    if (m_level > previousLevel)
+    {
+        if (auto* audio = FindGO<AudioManager>("audioManager"))
+        {
+            audio->PlayLevelUpSE();
+        }
     }
 
     // 最大レベルに到達。
