@@ -30,6 +30,42 @@ Game::~Game()
     ClearGameObjects();
 }
 
+bool Game::IsReady() const
+{
+    if (!IsStart())
+    {
+        return false;
+    }
+
+    const IGameObject* objects[] =
+    {
+        m_background,
+        m_player,
+        m_gameCamera,
+        m_worldHealthBarRenderer,
+        m_shapeBoxRenderer,
+        m_bulletRenderer,
+        m_enemyBulletRenderer,
+        m_trapRenderer,
+        m_enemyRenderer,
+        m_playerHUD,
+        m_playerEvolutionUI,
+        m_playerUpgradeUI,
+        m_gameOverUI,
+        m_audioManager
+    };
+
+    for (const IGameObject* object : objects)
+    {
+        if (object == nullptr || !object->IsStart())
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 // ============================================
 // 初期化
 // ============================================

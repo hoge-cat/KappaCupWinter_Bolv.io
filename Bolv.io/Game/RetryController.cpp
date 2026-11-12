@@ -106,7 +106,7 @@ void RetryController::Update()
     {
         Game* game = FindGO<Game>("game");
 
-        if (game == nullptr)
+        if (game == nullptr || !game->IsReady())
         {
             return;
         }
@@ -232,6 +232,15 @@ bool RetryController::AreOldObjectsDeleted() const
         "gameOverUI",
         "bullet",
         "enemyBullet",
+        "trap",
+        "playerUpgradeUI",
+        "playerEvolutionUI",
+        "shapeBoxRenderer",
+        "bulletRenderer",
+        "enemyBulletRenderer",
+        "trapRenderer",
+        "enemyRenderer",
+        "worldHealthBarRenderer",
         "audioManager"
     };
 

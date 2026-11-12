@@ -35,6 +35,7 @@ public:
 	void Update();
 	void Render(RenderContext& rc);
 
+	bool IsReady() const;
 	void ClearGameObjects();
 	void StartGameBGM();
 
