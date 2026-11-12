@@ -11,6 +11,7 @@
 #include "AudioManager.h"
 #include "MuzzleSmoke.h"
 #include "PlayerGrowthEffect.h"
+#include "BulletImpact.h"
 
 
 class Player : public IGameObject
@@ -217,10 +218,16 @@ public:
         int damage
     )
     {
+        const bool wasAlive = !m_health.IsDead();
         m_health
             .TakeDamage(
                 damage
             );
+        if (wasAlive && m_health.IsDead())
+        {
+            BulletImpact::EmitDestruction(m_position + Vector3(0, 30 * GetLevelScale(), 0),
+                GetLevelScale(), Vector4(0.15f, 0.72f, 0.95f, 1));
+        }
     }
 
 
