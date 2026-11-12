@@ -13,6 +13,9 @@ namespace
     constexpr int SE_SELECT = 7;
     constexpr int SE_SHOOT = 8;
     constexpr int SE_UPGRADE = 9;
+
+    constexpr float BGM_VOLUME = 0.30f;
+    constexpr float SHOOT_SE_VOLUME = 0.40f;
 }
 
 AudioManager::~AudioManager()
@@ -72,6 +75,7 @@ void AudioManager::PlayGameBGM()
     if (m_bgm != nullptr)
     {
         m_bgm->Init(BGM_GAME);
+        m_bgm->SetVolume(BGM_VOLUME);
         m_bgm->Play(true);
     }
 }
@@ -85,6 +89,7 @@ void AudioManager::PlayTitleBGM()
     if (m_bgm != nullptr)
     {
         m_bgm->Init(BGM_TITLE);
+        m_bgm->SetVolume(BGM_VOLUME);
         m_bgm->Play(true);
     }
 }
@@ -109,6 +114,10 @@ void AudioManager::PlaySE(int bankId)
         return;
     }
     se->Init(bankId);
+    if (bankId == SE_SHOOT)
+    {
+        se->SetVolume(SHOOT_SE_VOLUME);
+    }
     se->Play(false);
 }
 
