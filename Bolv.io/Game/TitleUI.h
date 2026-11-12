@@ -1,12 +1,31 @@
 #pragma once
+#include <array>
 
 class TitleUI : public IGameObject
 {
 public:
+    enum class Action { None, StartGame, ExitGame };
     bool Start();
+    void Update();
     void Render(RenderContext& rc);
+    Action ConsumeAction();
 
 private:
+    int HitTest(float x, float y) const;
+    void UpdateColors();
+    SpriteRender m_background;
+    std::array<SpriteRender, 3> m_buttonBorders;
+    std::array<SpriteRender, 3> m_buttonFills;
+    std::array<FontRender, 3> m_buttonLabels;
     FontRender m_titleFont;
-    FontRender m_startFont;
+    FontRender m_subtitleFont;
+    FontRender m_comingSoonFont;
+    FontRender m_hintFont;
+    int m_selected = 0;
+    Action m_action = Action::None;
+    POINT m_lastMouse = {};
+    bool m_wasMousePressed = false;
+    bool m_wasEnterPressed = false;
+    bool m_wasUpPressed = false;
+    bool m_wasDownPressed = false;
 };

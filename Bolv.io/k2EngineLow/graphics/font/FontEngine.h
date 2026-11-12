@@ -30,6 +30,7 @@ namespace nsK2EngineLow {
 		/// 描画開始。
 		/// </summary>
 		void BeginDraw(RenderContext& rc);
+		Vector2 MeasureText(const wchar_t* text) const;
 		/// <summary>
 		/// 文字列を描画。
 		/// </summary>

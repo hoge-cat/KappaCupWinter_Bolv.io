@@ -37,9 +37,6 @@ void RetryController::Update()
         isActive &&
         (GetAsyncKeyState('T') & 0x8000) != 0;
 
-    const bool enterTriggered =
-        enterPressed && !m_wasEnterPressed;
-
     const bool rTriggered =
         rPressed && !m_wasRPressed;
 
@@ -132,11 +129,19 @@ void RetryController::Update()
     // ========================================
     if (m_state == State::Title)
     {
-        if (enterTriggered)
+        TitleUI* title = FindGO<TitleUI>("titleUI");
+        if (title == nullptr || !title->IsStart()) { return; }
+        const TitleUI::Action action = title->ConsumeAction();
+        if (action == TitleUI::Action::StartGame)
         {
             AudioManager::PlaySelectSE();
             m_nextState = State::Playing;
             ClearCurrentScene();
+        }
+        else if (action == TitleUI::Action::ExitGame)
+        {
+            AudioManager::PlaySelectSE();
+            PostMessage(g_hWnd, WM_CLOSE, 0, 0);
         }
 
         return;
