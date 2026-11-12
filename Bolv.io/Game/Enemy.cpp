@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "Enemy.h"
+#include "BulletImpact.h"
 #include "Player.h"
+#include "AudioManager.h"
 
 #include <cmath>
 
@@ -873,6 +875,16 @@ void Enemy::TakeDamage(
 
 	m_hp =
 		0;
+    BulletImpact::EmitDestruction(m_position + Vector3(0, 30 * GetLevelScale(), 0),
+        GetLevelScale(), Vector4(0.95f, 0.30f, 0.34f, 1));
+
+
+	// 撃破確定時に一度だけSEを再生する。
+	// SoundSourceはワンショット再生終了後に自動削除される。
+	if (auto* audio = FindGO<AudioManager>("audioManager"))
+	{
+		audio->PlayDestroySE();
+	}
 
 
 	if (m_player !=

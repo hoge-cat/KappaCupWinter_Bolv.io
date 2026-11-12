@@ -5,6 +5,12 @@ using namespace std;
 using namespace DirectX;
 
 namespace nsK2EngineLow {
+    Vector2 FontEngine::MeasureText(const wchar_t* text) const
+    {
+        DirectX::XMFLOAT2 size;
+        DirectX::XMStoreFloat2(&size, m_spriteFont->MeasureString(text));
+        return Vector2(size.x, size.y);
+    }
 	FontEngine::~FontEngine()
 	{
 		if (m_srvDescriptorHeap != nullptr) {

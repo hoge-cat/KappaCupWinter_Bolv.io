@@ -136,12 +136,25 @@
     <Filter Include="弾\トラップ">
       <UniqueIdentifier>{182da487-a468-4e19-b6a6-aa620230abf2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="音声">
+      <UniqueIdentifier>{59e94409-024f-4493-8ca4-244cc02daa2c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="画面\ロード画面">
+      <UniqueIdentifier>{977cc33a-3677-4d3d-9db9-1d49c5e7e816}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="system\system.cpp">
       <Filter>system</Filter>
     </ClCompile>
     <ClCompile Include="Player.cpp">
+      <Filter>自機\本体</Filter>
+    </ClCompile>
+    <ClCompile Include="BulletImpact.cpp" />
+    <ClCompile Include="MuzzleSmoke.cpp">
+      <Filter>自機\本体</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerGrowthEffect.cpp">
       <Filter>自機\本体</Filter>
     </ClCompile>
     <ClCompile Include="PlayerContact.cpp">
@@ -204,6 +217,7 @@
     <ClCompile Include="PlayerEvolutionUI.cpp">
       <Filter>画面\進化UI</Filter>
     </ClCompile>
+    <ClCompile Include="ClearResultUI.cpp" />
     <ClCompile Include="TitleUI.cpp">
       <Filter>画面\タイトル</Filter>
     </ClCompile>
@@ -339,12 +353,25 @@
     <ClCompile Include="TrapRenderer.cpp">
       <Filter>弾\トラップ</Filter>
     </ClCompile>
+    <ClCompile Include="AudioManager.cpp">
+      <Filter>音声</Filter>
+    </ClCompile>
+    <ClCompile Include="LoadingScreen.cpp">
+      <Filter>画面\ロード画面</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="system\system.h">
       <Filter>system</Filter>
     </ClInclude>
     <ClInclude Include="Player.h">
+      <Filter>自機\本体</Filter>
+    </ClInclude>
+    <ClInclude Include="BulletImpact.h" />
+    <ClInclude Include="MuzzleSmoke.h">
+      <Filter>自機\本体</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerGrowthEffect.h">
       <Filter>自機\本体</Filter>
     </ClInclude>
     <ClInclude Include="PlayerContact.h">
@@ -407,6 +434,7 @@
     <ClInclude Include="PlayerEvolutionUI.h">
       <Filter>画面\進化UI</Filter>
     </ClInclude>
+    <ClInclude Include="ClearResultUI.h" />
     <ClInclude Include="TitleUI.h">
       <Filter>画面\タイトル</Filter>
     </ClInclude>
@@ -467,6 +495,12 @@
     </ClInclude>
     <ClInclude Include="TrapRenderer.h">
       <Filter>弾\トラップ</Filter>
+    </ClInclude>
+    <ClInclude Include="AudioManager.h">
+      <Filter>音声</Filter>
+    </ClInclude>
+    <ClInclude Include="LoadingScreen.h">
+      <Filter>画面\ロード画面</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

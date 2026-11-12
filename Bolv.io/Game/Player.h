@@ -8,6 +8,10 @@
 #include "PlayerContact.h"
 #include "PlayerStats.h"
 #include "PlayerEvolution.h"
+#include "AudioManager.h"
+#include "MuzzleSmoke.h"
+#include "PlayerGrowthEffect.h"
+#include "BulletImpact.h"
 
 
 class Player : public IGameObject
@@ -15,6 +19,9 @@ class Player : public IGameObject
 public:
 
     bool Start();
+
+    void NotifyShotFired(const Vector3& muzzlePosition, const Vector3& direction,
+        float bulletSizeMultiplier = 1.0f);
 
     void Update();
 
@@ -211,10 +218,16 @@ public:
         int damage
     )
     {
+        const bool wasAlive = !m_health.IsDead();
         m_health
             .TakeDamage(
                 damage
             );
+        if (wasAlive && m_health.IsDead())
+        {
+            BulletImpact::EmitDestruction(m_position + Vector3(0, 30 * GetLevelScale(), 0),
+                GetLevelScale(), Vector4(0.15f, 0.72f, 0.95f, 1));
+        }
     }
 
 
@@ -374,6 +387,11 @@ public:
         }
 
 
+        if (auto* audio = FindGO<AudioManager>("audioManager"))
+        {
+            audio->PlayUpgradeSE();
+        }
+
         return true;
     }
 
@@ -405,6 +423,8 @@ private:
 private:
 
     TankVisual m_tankVisual;
+    MuzzleSmoke m_muzzleSmoke;
+    PlayerGrowthEffect m_growthEffect;
 
     TankWeapon m_tankWeapon;
 

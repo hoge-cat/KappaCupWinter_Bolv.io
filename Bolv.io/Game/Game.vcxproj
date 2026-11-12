@@ -223,6 +223,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AudioManager.cpp" />
     <ClCompile Include="Background.cpp" />
     <ClCompile Include="Bullet.cpp" />
     <ClCompile Include="BulletRenderer.cpp" />
@@ -241,8 +242,12 @@
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameCamera.cpp" />
     <ClCompile Include="GameOverUI.cpp" />
+    <ClCompile Include="LoadingScreen.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="MuzzleSmoke.cpp" />
+    <ClCompile Include="BulletImpact.cpp" />
+    <ClCompile Include="PlayerGrowthEffect.cpp" />
     <ClCompile Include="PlayerContact.cpp" />
     <ClCompile Include="PlayerEvolution.cpp" />
     <ClCompile Include="PlayerEvolutionUI.cpp" />
@@ -290,12 +295,14 @@
     <ClCompile Include="TankWeaponTripleShot.cpp" />
     <ClCompile Include="TankWeaponTwinFlank.cpp" />
     <ClCompile Include="TitleUI.cpp" />
+    <ClCompile Include="ClearResultUI.cpp" />
     <ClCompile Include="TankWeaponTwin.cpp" />
     <ClCompile Include="Trap.cpp" />
     <ClCompile Include="TrapRenderer.cpp" />
     <ClCompile Include="WorldHealthBarRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AudioManager.h" />
     <ClInclude Include="Background.h" />
     <ClInclude Include="Bullet.h" />
     <ClInclude Include="BulletRenderer.h" />
@@ -314,12 +321,21 @@
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameCamera.h" />
     <ClInclude Include="GameOverUI.h" />
+    <ClInclude Include="LoadingScreen.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="MuzzleSmoke.h" />
+    <ClInclude Include="BulletImpact.h" />
+    <ClInclude Include="PlayerGrowthEffect.h" />
+    <None Include="Assets\shader\PlayerGrowthEffect.fx" />
+    <None Include="Assets\shader\MuzzleSmoke.fx" />
+    <None Include="Assets\sprite\BolvLogo.png" />
+    <None Include="Assets\sprite\BolvLogo.DDS" />
     <ClInclude Include="PlayerContact.h" />
     <ClInclude Include="PlayerEvolution.h" />
     <ClInclude Include="PlayerEvolutionUI.h" />
     <ClInclude Include="PlayerHealth.h" />
     <ClInclude Include="PlayerHUD.h" />
+    <ClInclude Include="InGameUI.h" />
     <ClInclude Include="PlayerProgress.h" />
     <ClInclude Include="PlayerScore.h" />
     <ClInclude Include="PlayerStats.h" />
@@ -336,6 +352,7 @@
     <ClInclude Include="TankVisual.h" />
     <ClInclude Include="TankWeapon.h" />
     <ClInclude Include="TitleUI.h" />
+    <ClInclude Include="ClearResultUI.h" />
     <ClInclude Include="Trap.h" />
     <ClInclude Include="TrapRenderer.h" />
     <ClInclude Include="WorldHealthBarRenderer.h" />

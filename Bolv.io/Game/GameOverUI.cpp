@@ -1,7 +1,9 @@
 #include "stdafx.h"
 #include "GameOverUI.h"
 #include "Player.h"
+#include "AudioManager.h"
 #include <cwchar>
+#include "InGameUI.h"
 
 bool GameOverUI::Start()
 {
@@ -24,6 +26,10 @@ bool GameOverUI::Start()
         { 1.0f, 1.0f, 1.0f, 1.0f }
     );
 
+    BolvUI::Rect(m_panelBorder, 784, 244, 0, 0, Vector4(0.18f,0.18f,0.18f,0.9f));
+    BolvUI::Rect(m_panel, 776, 236, 0, 0, Vector4(0.62f,0.62f,0.62f,0.95f));
+    BolvUI::Center(m_fontRender, L"\u30b2\u30fc\u30e0\u30aa\u30fc\u30d0\u30fc", 0, 55, 1.25f);
+
     return true;
 }
 
@@ -44,15 +50,24 @@ void GameOverUI::Update()
     swprintf_s(
         text,
         256,
-        L"SCORE: %d   LEVEL: %d   [R] RETRY   [T] TITLE",
+        L"\u30b9\u30b3\u30a2\uff1a%d\u3000\u30ec\u30d9\u30eb\uff1a%d\u3000[R] \u518d\u6311\u6226\u3000[T] \u30bf\u30a4\u30c8\u30eb\u3078",
         m_player->GetScore(),
         progress.GetLevel()
     );
 
     m_resultFontRender.SetText(text);
+    BolvUI::Center(m_resultFontRender, text, 0, -38, 0.60f);
+    const Vector2 size = g_graphicsEngine->GetFontEngine().MeasureText(text);
+    m_resultFontRender.SetPivot(size.x * 0.5f, 1.0f - size.y * 0.5f);
+    m_resultFontRender.SetPosition(Vector3(0.0f, -38.0f, 0.0f));
 
     // ゲーム終了時の結果を一度だけ記録する。
     m_resultFixed = true;
+
+    if (auto* audio = FindGO<AudioManager>("audioManager"))
+    {
+        audio->PlayGameOverSE();
+    }
 }
 
 void GameOverUI::Render(RenderContext& rc)
@@ -62,6 +77,8 @@ void GameOverUI::Render(RenderContext& rc)
         return;
     }
 
+    m_panelBorder.Draw(rc);
+    m_panel.Draw(rc);
     m_fontRender.Draw(rc);
     m_resultFontRender.Draw(rc);
 }

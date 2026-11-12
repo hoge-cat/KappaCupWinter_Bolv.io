@@ -16,4 +16,6 @@ private:
     FontRender m_resultFontRender;
 
     bool m_resultFixed = false;
+    SpriteRender m_panelBorder;
+    SpriteRender m_panel;
 };

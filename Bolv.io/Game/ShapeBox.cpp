@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "ShapeBox.h"
+#include "BulletImpact.h"
 #include "Player.h"
 
 #include <cmath>
@@ -237,6 +238,8 @@ void ShapeBox::TakeDamage(
 
     if (m_hp <= 0)
     {
+        BulletImpact::EmitDestruction(m_position + Vector3(0, 24, 21), 1.0f,
+            Vector4(0.98f, 0.81f, 0.30f, 1));
         // 5秒後に復活。
         m_respawnTimer =
             5.0f;

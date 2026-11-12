@@ -1,15 +1,43 @@
 #include "stdafx.h"
 
 #include "Bullet.h"
+#include "BulletImpact.h"
 
 #include "ShapeBox.h"
 #include "Enemy.h"
 #include "EnemyBullet.h"
 #include "CollisionGrid.h"
+#include "AudioManager.h"
+
+#include <chrono>
 
 
 namespace
 {
+    // 同時に大量の弾が命中してもSEが重なりすぎないようにする。
+    // SoundSourceはワンショット再生後に自動削除されるため保持しない。
+    void PlayCollisionDamageSE()
+    {
+        using Clock = std::chrono::steady_clock;
+        static Clock::time_point lastPlayed;
+        const auto now = Clock::now();
+
+        if (lastPlayed != Clock::time_point{} &&
+            now - lastPlayed < std::chrono::milliseconds(80))
+        {
+            return;
+        }
+
+        AudioManager* audio = FindGO<AudioManager>("audioManager");
+        if (audio == nullptr)
+        {
+            return;
+        }
+
+        lastPlayed = now;
+        audio->PlayDamageSE();
+    }
+
     // ============================================
     // CollisionGrid検索時の余裕
     //
@@ -295,6 +323,8 @@ void Bullet::Update()
             // Enemy BulletへDamage
             // ====================================
 
+            BulletImpact::AtHit(previousPosition, nextPosition, m_levelScale, false,
+                [&](const Vector3& end) { return enemyBullet->IsHitByBullet(previousPosition, end, m_radius); });
             enemyBullet
                 ->TakeCollisionDamage(
                     m_collisionDamage
@@ -505,10 +535,15 @@ void Bullet::Update()
             // EnemyへDamage
             // ====================================
 
+            BulletImpact::AtHit(previousPosition, nextPosition, m_levelScale, false,
+                [&](const Vector3& end) { return enemy->IsHit(previousPosition, end, m_radius); });
             enemy
                 ->TakeDamage(
                     actualDamage
                 );
+
+            // 命中時のダメージSE（連続再生は共通で制限）
+            PlayCollisionDamageSE();
 
 
             // ====================================
@@ -710,10 +745,15 @@ void Bullet::Update()
             // ShapeへDamage
             // ====================================
 
+            BulletImpact::AtHit(previousPosition, nextPosition, m_levelScale, false,
+                [&](const Vector3& end) { return shapeBox->IsHit(previousPosition, end, m_radius); });
             shapeBox
                 ->TakeDamage(
                     actualDamage
                 );
+
+            // 命中時のダメージSE（連続再生は共通で制限）
+            PlayCollisionDamageSE();
 
 
             // ====================================

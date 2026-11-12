@@ -4,6 +4,7 @@
 
 #include "Enemy.h"
 #include "ShapeBox.h"
+#include "Player.h"
 
 namespace
 {
@@ -11,7 +12,7 @@ namespace
     // HPバー基本サイズ
     // ============================================
 
-    const float BAR_HEIGHT = 7.0f;
+    const float BAR_HEIGHT = 6.0f;
 
     // ============================================
     // 背景を少し大きくする
@@ -286,6 +287,14 @@ void WorldHealthBarRenderer::Render(
     RenderContext& rc)
 {
     int barIndex = 0;
+    if (auto* player = FindGO<Player>("player"))
+    {
+        if (player->GetHealth().IsDead()) { return; }
+        Vector3 position = player->GetPosition();
+        position.y += 8.0f * player->GetLevelScale();
+        if (DrawHealthBar(rc, barIndex, position, player->GetHealth().GetHP(),
+            player->GetHealth().GetMaxHP(), 64.0f * player->GetLevelScale())) { ++barIndex; }
+    }
 
     // ========================================================
     // Enemy

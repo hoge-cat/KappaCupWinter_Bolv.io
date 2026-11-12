@@ -3,6 +3,7 @@
 #include "Bullet.h"
 #include "system/system.h"
 #include "Player.h"
+#include "AudioManager.h"
 
 #include <cmath>
 #include <cstdlib>
@@ -1179,4 +1180,17 @@ void TankWeapon::Fire(
         collisionDamage,
         bulletScale
     );
+
+    if (player != nullptr)
+    {
+        player->NotifyShotFired(firePosition, direction, bulletSizeMultiplier);
+    }
+
+    // 弾の生成成功時に射撃SEを再生する。
+    // 連射・複数砲身による音の重なりはAudioManager側で制御する。
+    AudioManager* audioManager = FindGO<AudioManager>("audioManager");
+    if (audioManager != nullptr)
+    {
+        audioManager->PlayShootSE();
+    }
 }

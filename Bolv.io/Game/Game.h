@@ -20,72 +20,81 @@ class EnemyBulletRenderer;
 class EnemyRenderer;
 class WorldHealthBarRenderer;
 class TrapRenderer;
+class AudioManager;
+class BulletImpact;
 
 
 class Game : public IGameObject
 {
 public:
-    Game()
-    {}
+	Game()
+	{}
 
-    ~Game();
+	~Game();
 
-    bool Start();
-    void Update();
-    void Render(RenderContext& rc);
+	bool Start();
+	void Update();
+	void Render(RenderContext& rc);
 
-    void ClearGameObjects();
+	bool IsReady() const;
+	void ClearGameObjects();
+	void StartGameBGM();
 
 
 private:
-    Background* m_background =
-        nullptr;
+    BulletImpact* m_bulletImpact = nullptr;
+	Background* m_background =
+		nullptr;
 
-    Player* m_player =
-        nullptr;
+	Player* m_player =
+		nullptr;
 
-    GameCamera* m_gameCamera =
-        nullptr;
+	GameCamera* m_gameCamera =
+		nullptr;
 
-    PlayerHUD* m_playerHUD =
-        nullptr;
+	PlayerHUD* m_playerHUD =
+		nullptr;
 
-    GameOverUI* m_gameOverUI =
-        nullptr;
+	GameOverUI* m_gameOverUI =
+		nullptr;
 
-    PlayerUpgradeUI* m_playerUpgradeUI =
-        nullptr;
+	PlayerUpgradeUI* m_playerUpgradeUI =
+		nullptr;
 
-    ShapeBoxRenderer* m_shapeBoxRenderer =
-        nullptr;
+	ShapeBoxRenderer* m_shapeBoxRenderer =
+		nullptr;
 
-    PlayerEvolutionUI* m_playerEvolutionUI =
-        nullptr;
+	PlayerEvolutionUI* m_playerEvolutionUI =
+		nullptr;
 
-    BulletRenderer* m_bulletRenderer =
-        nullptr;
+	BulletRenderer* m_bulletRenderer =
+		nullptr;
 
-    EnemyBulletRenderer* m_enemyBulletRenderer =
-        nullptr;
+	EnemyBulletRenderer* m_enemyBulletRenderer =
+		nullptr;
 
-    TrapRenderer* m_trapRenderer =
-        nullptr;
+	TrapRenderer* m_trapRenderer =
+		nullptr;
 
-    EnemyRenderer* m_enemyRenderer =
-        nullptr;
+	EnemyRenderer* m_enemyRenderer =
+		nullptr;
 
-    WorldHealthBarRenderer*
-        m_worldHealthBarRenderer =
-        nullptr;
+	WorldHealthBarRenderer*
+		m_worldHealthBarRenderer =
+		nullptr;
 
-
-    // ============================================
-    // 衝突判定用Uniform Grid
-    // ============================================
-
-    CollisionGrid m_collisionGrid;
+	AudioManager*
+		m_audioManager =
+		nullptr;
 
 
-    ShapeSpawner m_shapeSpawner;
-    EnemySpawner m_enemySpawner;
+	// ============================================
+	// 衝突判定用Uniform Grid
+	// ============================================
+
+	CollisionGrid m_collisionGrid;
+
+
+	ShapeSpawner m_shapeSpawner;
+	EnemySpawner m_enemySpawner;
 };

@@ -241,6 +241,8 @@ void TankWeapon::FireTrapper(
         levelScale
     );
 
+    player->NotifyShotFired(firePosition, direction);
+
 
     m_twinFireLeft =
         true;
