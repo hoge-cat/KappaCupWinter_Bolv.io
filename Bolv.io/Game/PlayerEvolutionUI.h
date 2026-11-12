@@ -65,6 +65,12 @@ private:
     // ========================================================
 
     void UpdateOptionTexts();
+    Vector3 OptionCenter(int index) const
+    {
+        return Vector3(-830.0f + (index % 2) * 180.0f, 420.0f - (index / 2) * 104.0f, 0.0f);
+    }
+    SpriteRender m_cardBackground[MAX_OPTION_COUNT];
+    SpriteRender m_cardFill[MAX_OPTION_COUNT];
 
 
     // ========================================================

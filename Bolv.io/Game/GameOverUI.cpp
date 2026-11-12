@@ -3,6 +3,7 @@
 #include "Player.h"
 #include "AudioManager.h"
 #include <cwchar>
+#include "InGameUI.h"
 
 bool GameOverUI::Start()
 {
@@ -24,6 +25,10 @@ bool GameOverUI::Start()
     m_resultFontRender.SetColor(
         { 1.0f, 1.0f, 1.0f, 1.0f }
     );
+
+    BolvUI::Rect(m_panelBorder, 784, 244, 0, 0, Vector4(0.18f,0.18f,0.18f,0.9f));
+    BolvUI::Rect(m_panel, 776, 236, 0, 0, Vector4(0.62f,0.62f,0.62f,0.95f));
+    BolvUI::Center(m_fontRender, L"\u30b2\u30fc\u30e0\u30aa\u30fc\u30d0\u30fc", 0, 55, 1.25f);
 
     return true;
 }
@@ -51,9 +56,10 @@ void GameOverUI::Update()
     );
 
     m_resultFontRender.SetText(text);
+    BolvUI::Center(m_resultFontRender, text, 0, -38, 0.60f);
     const Vector2 size = g_graphicsEngine->GetFontEngine().MeasureText(text);
     m_resultFontRender.SetPivot(size.x * 0.5f, 1.0f - size.y * 0.5f);
-    m_resultFontRender.SetPosition(Vector3(0.0f, -130.0f, 0.0f));
+    m_resultFontRender.SetPosition(Vector3(0.0f, -38.0f, 0.0f));
 
     // ゲーム終了時の結果を一度だけ記録する。
     m_resultFixed = true;
@@ -71,6 +77,8 @@ void GameOverUI::Render(RenderContext& rc)
         return;
     }
 
+    m_panelBorder.Draw(rc);
+    m_panel.Draw(rc);
     m_fontRender.Draw(rc);
     m_resultFontRender.Draw(rc);
 }

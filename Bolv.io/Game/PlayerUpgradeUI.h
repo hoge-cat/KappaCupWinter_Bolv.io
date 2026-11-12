@@ -21,4 +21,6 @@ private:
     FontRender m_statFontRender[STAT_COUNT];
 
     FontRender m_pointFontRender;
+    SpriteRender m_statBackground[STAT_COUNT];
+    SpriteRender m_statFill[STAT_COUNT];
 };

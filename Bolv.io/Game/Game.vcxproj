@@ -332,6 +332,7 @@
     <ClInclude Include="PlayerEvolutionUI.h" />
     <ClInclude Include="PlayerHealth.h" />
     <ClInclude Include="PlayerHUD.h" />
+    <ClInclude Include="InGameUI.h" />
     <ClInclude Include="PlayerProgress.h" />
     <ClInclude Include="PlayerScore.h" />
     <ClInclude Include="PlayerStats.h" />

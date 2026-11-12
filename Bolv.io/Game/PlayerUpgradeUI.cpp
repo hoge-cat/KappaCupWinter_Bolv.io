@@ -4,6 +4,7 @@
 #include "PlayerStats.h"
 
 #include <cwchar>
+#include "InGameUI.h"
 
 
 bool PlayerUpgradeUI::Start()
@@ -19,11 +20,11 @@ bool PlayerUpgradeUI::Start()
     // ============================================
 
     const float startY =
-        -60.0f;
+        -210.0f;
 
 
     const float intervalY =
-        35.0f;
+        34.0f;
 
 
     for (int i = 0;
@@ -33,7 +34,7 @@ bool PlayerUpgradeUI::Start()
         m_statFontRender[i]
             .SetPosition(
                 Vector3(
-                    -620.0f,
+                    -914.0f,
                     startY -
                     intervalY *
                     i,
@@ -44,7 +45,7 @@ bool PlayerUpgradeUI::Start()
 
         m_statFontRender[i]
             .SetScale(
-                0.95f
+                0.58f
             );
 
 
@@ -67,8 +68,8 @@ bool PlayerUpgradeUI::Start()
     m_pointFontRender
         .SetPosition(
             Vector3(
-                -620.0f,
-                -20.0f,
+                -914.0f,
+                -173.0f,
                 0.0f
             )
         );
@@ -76,7 +77,7 @@ bool PlayerUpgradeUI::Start()
 
     m_pointFontRender
         .SetScale(
-            1.1f
+            0.64f
         );
 
 
@@ -91,6 +92,13 @@ bool PlayerUpgradeUI::Start()
         );
 
 
+    for (int i = 0; i < STAT_COUNT; ++i)
+    {
+        const float y = -220.0f - i * 34.0f;
+        BolvUI::Rect(m_statBackground[i], 364, 28, -730, y, Vector4(0.20f,0.20f,0.20f,0.80f));
+        BolvUI::Rect(m_statFill[i], 356, 22, -908, y, BolvUI::StatColor(i));
+        m_statFill[i].SetPivot(Vector2(0,0.5f));
+    }
     UpdateText();
 
 
@@ -330,7 +338,7 @@ void PlayerUpgradeUI::UpdateText()
         swprintf_s(
             text,
             256,
-            L"[1] HP Regen       %d / 10",
+            L"[1] \u81ea\u52d5\u56de\u5fa9  %d / 10",
             stats.GetLevel(
                 PlayerStats::HealthRegen
             )
@@ -350,7 +358,7 @@ void PlayerUpgradeUI::UpdateText()
         swprintf_s(
             text,
             256,
-            L"[2] Max Health     %d / 10",
+            L"[2] \u6700\u5927\u8010\u4e45\u529b  %d / 10",
             stats.GetLevel(
                 PlayerStats::MaxHealth
             )
@@ -370,7 +378,7 @@ void PlayerUpgradeUI::UpdateText()
         swprintf_s(
             text,
             256,
-            L"[3] Body Damage    %d / 10",
+            L"[3] \u4f53\u5f53\u305f\u308a\u5a01\u529b  %d / 10",
             stats.GetLevel(
                 PlayerStats::BodyDamage
             )
@@ -390,7 +398,7 @@ void PlayerUpgradeUI::UpdateText()
         swprintf_s(
             text,
             256,
-            L"[4] Move Speed     %d / 10",
+            L"[4] \u79fb\u52d5\u901f\u5ea6  %d / 10",
             stats.GetLevel(
                 PlayerStats::MovementSpeed
             )
@@ -445,7 +453,7 @@ void PlayerUpgradeUI::UpdateText()
         swprintf_s(
             text,
             256,
-            L"[1] HP Regen       %d / 7",
+            L"[1] \u81ea\u52d5\u56de\u5fa9  %d / 7",
             stats.GetLevel(
                 PlayerStats::HealthRegen
             )
@@ -465,7 +473,7 @@ void PlayerUpgradeUI::UpdateText()
         swprintf_s(
             text,
             256,
-            L"[2] Max Health     %d / 7",
+            L"[2] \u6700\u5927\u8010\u4e45\u529b  %d / 7",
             stats.GetLevel(
                 PlayerStats::MaxHealth
             )
@@ -485,7 +493,7 @@ void PlayerUpgradeUI::UpdateText()
         swprintf_s(
             text,
             256,
-            L"[3] Body Damage    %d / 7",
+            L"[3] \u4f53\u5f53\u305f\u308a\u5a01\u529b  %d / 7",
             stats.GetLevel(
                 PlayerStats::BodyDamage
             )
@@ -505,7 +513,7 @@ void PlayerUpgradeUI::UpdateText()
         swprintf_s(
             text,
             256,
-            L"[4] Bullet Speed   %d / 7",
+            L"[4] \u5f3e\u901f  %d / 7",
             stats.GetLevel(
                 PlayerStats::BulletSpeed
             )
@@ -525,7 +533,7 @@ void PlayerUpgradeUI::UpdateText()
         swprintf_s(
             text,
             256,
-            L"[5] Penetration    %d / 7",
+            L"[5] \u5f3e\u306e\u8cab\u901a\u529b  %d / 7",
             stats.GetLevel(
                 PlayerStats::BulletPenetration
             )
@@ -545,7 +553,7 @@ void PlayerUpgradeUI::UpdateText()
         swprintf_s(
             text,
             256,
-            L"[6] Bullet Damage  %d / 7",
+            L"[6] \u5f3e\u306e\u5a01\u529b  %d / 7",
             stats.GetLevel(
                 PlayerStats::BulletDamage
             )
@@ -565,7 +573,7 @@ void PlayerUpgradeUI::UpdateText()
         swprintf_s(
             text,
             256,
-            L"[7] Reload         %d / 7",
+            L"[7] \u9023\u5c04\u901f\u5ea6  %d / 7",
             stats.GetLevel(
                 PlayerStats::Reload
             )
@@ -585,7 +593,7 @@ void PlayerUpgradeUI::UpdateText()
         swprintf_s(
             text,
             256,
-            L"[8] Move Speed     %d / 7",
+            L"[8] \u79fb\u52d5\u901f\u5ea6  %d / 7",
             stats.GetLevel(
                 PlayerStats::MovementSpeed
             )
@@ -606,7 +614,7 @@ void PlayerUpgradeUI::UpdateText()
     swprintf_s(
         text,
         256,
-        L"Upgrade Points: %d",
+        L"\u5f37\u5316\u30dd\u30a4\u30f3\u30c8\uff1a%d\u3000\u6570\u5b57\u30ad\u30fc\u3067\u5f37\u5316",
         progress.GetUpgradePoints()
     );
 
@@ -615,6 +623,11 @@ void PlayerUpgradeUI::UpdateText()
         .SetText(
             text
         );
+    for (int i = 0; i < STAT_COUNT; ++i)
+    {
+        BolvUI::Center(m_statFontRender[i], m_statFontRender[i].GetText(), -730, -220.0f - i * 34, 0.58f);
+    }
+    BolvUI::Center(m_pointFontRender, m_pointFontRender.GetText(), -730, -173, 0.48f);
 }
 
 
@@ -632,6 +645,21 @@ void PlayerUpgradeUI::Render(
     }
 
 
+    if (m_player->GetHealth().IsDead()) { return; }
+    const bool smasher = m_player->GetEvolution().GetCurrentClass() == PlayerEvolution::Smasher;
+    const PlayerStats::StatType types[] = { PlayerStats::HealthRegen, PlayerStats::MaxHealth,
+        PlayerStats::BodyDamage, PlayerStats::BulletSpeed, PlayerStats::BulletPenetration,
+        PlayerStats::BulletDamage, PlayerStats::Reload, PlayerStats::MovementSpeed };
+    for (int i = 0; i < (smasher ? 4 : STAT_COUNT); ++i)
+    {
+        const auto type = smasher && i == 3 ? PlayerStats::MovementSpeed : types[i];
+        const int maximum = m_player->GetStats().GetMaxLevel(type, smasher);
+        const float ratio = BolvUI::Clamp01(static_cast<float>(m_player->GetStats().GetLevel(type)) / (maximum > 0 ? maximum : 1));
+        m_statBackground[i].Draw(rc);
+        m_statFill[i].SetMulColor(BolvUI::StatColor(smasher && i == 3 ? 7 : i));
+        m_statFill[i].SetScale(Vector3(ratio,1,1)); m_statFill[i].Update();
+        if (ratio > 0) { m_statFill[i].Draw(rc); }
+    }
     m_pointFontRender.Draw(
         rc
     );
