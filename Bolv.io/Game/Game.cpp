@@ -21,6 +21,7 @@
 #include "Trap.h"
 #include "TrapRenderer.h"
 #include "AudioManager.h"
+#include "BulletImpact.h"
 
 // ============================================
 // デストラクタ
@@ -52,7 +53,8 @@ bool Game::IsReady() const
         m_playerEvolutionUI,
         m_playerUpgradeUI,
         m_gameOverUI,
-        m_audioManager
+        m_audioManager,
+        m_bulletImpact
     };
 
     for (const IGameObject* object : objects)
@@ -75,6 +77,7 @@ bool Game::Start()
     // CollisionGridを使用可能にする
     // ========================================
     g_collisionGrid = &m_collisionGrid;
+    m_bulletImpact = NewGO<BulletImpact>(1, "bulletImpact");
 
     // ========================================
     // ゲームオブジェクト生成
@@ -239,6 +242,8 @@ void Game::Render(RenderContext& rc)
 // ============================================
 void Game::ClearGameObjects()
 {
+    DeleteGO(m_bulletImpact);
+    m_bulletImpact = nullptr;
     // ========================================
     // AudioManager
     // ========================================

@@ -246,6 +246,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="MuzzleSmoke.cpp" />
+    <ClCompile Include="BulletImpact.cpp" />
     <ClCompile Include="PlayerGrowthEffect.cpp" />
     <ClCompile Include="PlayerContact.cpp" />
     <ClCompile Include="PlayerEvolution.cpp" />
@@ -322,6 +323,7 @@
     <ClInclude Include="LoadingScreen.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="MuzzleSmoke.h" />
+    <ClInclude Include="BulletImpact.h" />
     <ClInclude Include="PlayerGrowthEffect.h" />
     <None Include="Assets\shader\PlayerGrowthEffect.fx" />
     <None Include="Assets\shader\MuzzleSmoke.fx" />

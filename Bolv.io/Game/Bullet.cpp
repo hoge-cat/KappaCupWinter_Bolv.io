@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "Bullet.h"
+#include "BulletImpact.h"
 
 #include "ShapeBox.h"
 #include "Enemy.h"
@@ -322,6 +323,8 @@ void Bullet::Update()
             // Enemy BulletへDamage
             // ====================================
 
+            BulletImpact::AtHit(previousPosition, nextPosition, m_levelScale, false,
+                [&](const Vector3& end) { return enemyBullet->IsHitByBullet(previousPosition, end, m_radius); });
             enemyBullet
                 ->TakeCollisionDamage(
                     m_collisionDamage
@@ -532,6 +535,8 @@ void Bullet::Update()
             // EnemyへDamage
             // ====================================
 
+            BulletImpact::AtHit(previousPosition, nextPosition, m_levelScale, false,
+                [&](const Vector3& end) { return enemy->IsHit(previousPosition, end, m_radius); });
             enemy
                 ->TakeDamage(
                     actualDamage
@@ -740,6 +745,8 @@ void Bullet::Update()
             // ShapeへDamage
             // ====================================
 
+            BulletImpact::AtHit(previousPosition, nextPosition, m_levelScale, false,
+                [&](const Vector3& end) { return shapeBox->IsHit(previousPosition, end, m_radius); });
             shapeBox
                 ->TakeDamage(
                     actualDamage

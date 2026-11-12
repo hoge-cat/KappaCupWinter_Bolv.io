@@ -21,6 +21,7 @@ class EnemyRenderer;
 class WorldHealthBarRenderer;
 class TrapRenderer;
 class AudioManager;
+class BulletImpact;
 
 
 class Game : public IGameObject
@@ -41,6 +42,7 @@ public:
 
 
 private:
+    BulletImpact* m_bulletImpact = nullptr;
 	Background* m_background =
 		nullptr;
 

@@ -150,6 +150,7 @@
     <ClCompile Include="Player.cpp">
       <Filter>自機\本体</Filter>
     </ClCompile>
+    <ClCompile Include="BulletImpact.cpp" />
     <ClCompile Include="MuzzleSmoke.cpp">
       <Filter>自機\本体</Filter>
     </ClCompile>
@@ -365,6 +366,7 @@
     <ClInclude Include="Player.h">
       <Filter>自機\本体</Filter>
     </ClInclude>
+    <ClInclude Include="BulletImpact.h" />
     <ClInclude Include="MuzzleSmoke.h">
       <Filter>自機\本体</Filter>
     </ClInclude>
