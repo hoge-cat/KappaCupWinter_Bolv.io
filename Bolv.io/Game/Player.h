@@ -9,6 +9,7 @@
 #include "PlayerStats.h"
 #include "PlayerEvolution.h"
 #include "AudioManager.h"
+#include "MuzzleSmoke.h"
 
 
 class Player : public IGameObject
@@ -414,6 +415,7 @@ private:
 private:
 
     TankVisual m_tankVisual;
+    MuzzleSmoke m_muzzleSmoke;
 
     TankWeapon m_tankWeapon;
 

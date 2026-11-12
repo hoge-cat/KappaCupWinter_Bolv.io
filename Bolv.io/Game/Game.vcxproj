@@ -245,6 +245,7 @@
     <ClCompile Include="LoadingScreen.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="MuzzleSmoke.cpp" />
     <ClCompile Include="PlayerContact.cpp" />
     <ClCompile Include="PlayerEvolution.cpp" />
     <ClCompile Include="PlayerEvolutionUI.cpp" />
@@ -319,6 +320,8 @@
     <ClInclude Include="GameOverUI.h" />
     <ClInclude Include="LoadingScreen.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="MuzzleSmoke.h" />
+    <None Include="Assets\shader\MuzzleSmoke.fx" />
     <ClInclude Include="PlayerContact.h" />
     <ClInclude Include="PlayerEvolution.h" />
     <ClInclude Include="PlayerEvolutionUI.h" />

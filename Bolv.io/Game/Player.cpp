@@ -13,6 +13,7 @@ void Player::NotifyShotFired(const Vector3& muzzlePosition, const Vector3& direc
     }
 
     m_tankVisual.OnShotFired(muzzlePosition, direction, bulletSizeMultiplier);
+    m_muzzleSmoke.Emit(muzzlePosition, direction, GetLevelScale() * bulletSizeMultiplier);
 
     // Velocity impulse per successful shot, in Bolv.io world units / second.
     // Existing movement friction handles recovery; do not multiply by delta time.
@@ -59,6 +60,7 @@ bool Player::Start()
 
 
     m_tankVisual.Init();
+    m_muzzleSmoke.Init();
 
 
     // ============================================
@@ -97,6 +99,8 @@ bool Player::Start()
 
 void Player::Update()
 {
+    m_muzzleSmoke.Update(g_gameTime->GetFrameDeltaTime());
+
     if (m_health.IsDead())
     {
         return;
@@ -666,4 +670,5 @@ void Player::Render(
     m_tankVisual.Render(
         rc
     );
+    m_muzzleSmoke.Draw();
 }

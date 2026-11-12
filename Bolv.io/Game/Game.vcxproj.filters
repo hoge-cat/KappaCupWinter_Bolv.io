@@ -150,6 +150,9 @@
     <ClCompile Include="Player.cpp">
       <Filter>自機\本体</Filter>
     </ClCompile>
+    <ClCompile Include="MuzzleSmoke.cpp">
+      <Filter>自機\本体</Filter>
+    </ClCompile>
     <ClCompile Include="PlayerContact.cpp">
       <Filter>自機\接触</Filter>
     </ClCompile>
@@ -357,6 +360,9 @@
       <Filter>system</Filter>
     </ClInclude>
     <ClInclude Include="Player.h">
+      <Filter>自機\本体</Filter>
+    </ClInclude>
+    <ClInclude Include="MuzzleSmoke.h">
       <Filter>自機\本体</Filter>
     </ClInclude>
     <ClInclude Include="PlayerContact.h">
