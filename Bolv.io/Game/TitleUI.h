@@ -17,7 +17,7 @@ private:
     std::array<SpriteRender, 3> m_buttonBorders;
     std::array<SpriteRender, 3> m_buttonFills;
     std::array<FontRender, 3> m_buttonLabels;
-    FontRender m_titleFont;
+    SpriteRender m_logo;
     FontRender m_subtitleFont;
     FontRender m_comingSoonFont;
     FontRender m_hintFont;

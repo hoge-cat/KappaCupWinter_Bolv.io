@@ -325,6 +325,8 @@
     <ClInclude Include="PlayerGrowthEffect.h" />
     <None Include="Assets\shader\PlayerGrowthEffect.fx" />
     <None Include="Assets\shader\MuzzleSmoke.fx" />
+    <None Include="Assets\sprite\BolvLogo.png" />
+    <None Include="Assets\sprite\BolvLogo.DDS" />
     <ClInclude Include="PlayerContact.h" />
     <ClInclude Include="PlayerEvolution.h" />
     <ClInclude Include="PlayerEvolutionUI.h" />

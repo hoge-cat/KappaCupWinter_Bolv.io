@@ -39,8 +39,9 @@ bool TitleUI::Start()
     m_background.SetMulColor(Vector4(0.025f, 0.045f, 0.075f, 1.0f));
     PlaceSprite(m_background, 0.0f);
     m_background.Update();
-    CenterText(m_titleFont, L"Bolv.io", 4.0f, 320.0f);
-    m_titleFont.SetColor(Vector4(0.12f, 0.80f, 1.0f, 1.0f));
+    m_logo.Init("Assets/sprite/BolvLogo.DDS", 880.0f, 880.0f * 793.0f / 1983.0f);
+    PlaceSprite(m_logo, 315.0f);
+    m_logo.Update();
     CenterText(m_subtitleFont, L"3D TANK ARENA", 0.8f, 180.0f);
     m_subtitleFont.SetColor(Vector4(0.48f, 0.62f, 0.73f, 1.0f));
     const wchar_t* labels[] = {
@@ -60,13 +61,13 @@ bool TitleUI::Start()
     }
     CenterText(m_comingSoonFont, L"\u6e96\u5099\u4e2d", 0.55f, BUTTON_Y[1] - 22.0f);
     m_comingSoonFont.SetColor(Vector4(0.36f, 0.44f, 0.52f, 1.0f));
-    CenterText(m_hintFont, L"MOUSE / UP DOWN / TAB    ENTER : SELECT", 0.55f, -465.0f);
+    CenterText(m_hintFont, L"MOUSE / WASD / UP DOWN / TAB    ENTER : SELECT", 0.55f, -465.0f);
     m_hintFont.SetColor(Vector4(0.35f, 0.46f, 0.57f, 1.0f));
     GetCursorPos(&m_lastMouse);
     m_wasMousePressed = Pressed(VK_LBUTTON);
     m_wasEnterPressed = Pressed(VK_RETURN) || Pressed(VK_SPACE);
-    m_wasUpPressed = Pressed(VK_UP);
-    m_wasDownPressed = Pressed(VK_DOWN) || Pressed(VK_TAB);
+    m_wasUpPressed = Pressed(VK_UP) || Pressed('W') || Pressed('A');
+    m_wasDownPressed = Pressed(VK_DOWN) || Pressed(VK_TAB) || Pressed('S') || Pressed('D');
     UpdateColors();
     return true;
 }
@@ -97,8 +98,8 @@ void TitleUI::Update()
     const bool active = GetForegroundWindow() == g_hWnd;
     const bool mousePressed = Pressed(VK_LBUTTON);
     const bool enterPressed = Pressed(VK_RETURN) || Pressed(VK_SPACE);
-    const bool upPressed = Pressed(VK_UP);
-    const bool downPressed = Pressed(VK_DOWN) || Pressed(VK_TAB);
+    const bool upPressed = Pressed(VK_UP) || Pressed('W') || Pressed('A');
+    const bool downPressed = Pressed(VK_DOWN) || Pressed(VK_TAB) || Pressed('S') || Pressed('D');
     POINT mouse;
     int hovered = -1;
     if (active && GetCursorPos(&mouse))
@@ -147,7 +148,7 @@ void TitleUI::Render(RenderContext& rc)
         m_buttonBorders[i].Draw(rc);
         m_buttonFills[i].Draw(rc);
     }
-    m_titleFont.Draw(rc);
+    m_logo.Draw(rc);
     m_subtitleFont.Draw(rc);
     for (auto& label : m_buttonLabels) { label.Draw(rc); }
     m_comingSoonFont.Draw(rc);
