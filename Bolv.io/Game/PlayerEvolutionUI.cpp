@@ -406,7 +406,8 @@ void PlayerEvolutionUI::HandleEvolutionSelection()
         {
             if (auto* audio = FindGO<AudioManager>("audioManager"))
             {
-                audio->PlayEvolveSE();
+                audio->PlaySelectSE();
+                audio->PlayEvolveSE(true);
             }
 
             OutputDebugStringA(

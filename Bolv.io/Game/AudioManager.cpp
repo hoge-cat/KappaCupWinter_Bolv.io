@@ -41,6 +41,20 @@ bool AudioManager::Start()
 
 void AudioManager::Update()
 {
+    for (auto it = m_evolveDelays.begin(); it != m_evolveDelays.end();)
+    {
+        *it -= g_gameTime->GetFrameDeltaTime();
+        if (*it <= 0.0f)
+        {
+            PlaySE(SE_EVOLVE);
+            it = m_evolveDelays.erase(it);
+        }
+        else
+        {
+            ++it;
+        }
+    }
+
     if (m_shootCooldown > 0.0f)
     {
         m_shootCooldown -= g_gameTime->GetFrameDeltaTime();
@@ -109,8 +123,27 @@ void AudioManager::PlayShootSE()
 
 void AudioManager::PlayDamageSE() { PlaySE(SE_DAMAGE); }
 void AudioManager::PlayDestroySE() { PlaySE(SE_DESTROY); }
-void AudioManager::PlayEvolveSE() { PlaySE(SE_EVOLVE); }
+void AudioManager::PlayEvolveSE(bool afterSelection)
+{
+    // Keep evolution audio after the selection cue without delaying gameplay.
+    if (afterSelection)
+    {
+        const auto wave = g_soundEngine->GetWaveFileBank().FindWaveFile(SE_SELECT);
+        if (wave && wave->GetFormat() && wave->GetFormat()->nAvgBytesPerSec > 0)
+        {
+            m_evolveDelays.push_back(static_cast<float>(wave->GetSize()) /
+                wave->GetFormat()->nAvgBytesPerSec);
+            return;
+        }
+    }
+    PlaySE(SE_EVOLVE);
+}
 void AudioManager::PlayGameOverSE() { PlaySE(SE_GAMEOVER); }
 void AudioManager::PlayLevelUpSE() { PlaySE(SE_LEVELUP); }
-void AudioManager::PlaySelectSE() { PlaySE(SE_SELECT); }
+void AudioManager::PlaySelectSE()
+{
+    // Selection can be confirmed before a scene AudioManager exists.
+    g_soundEngine->ResistWaveFileBank(SE_SELECT, "Assets/sound/se_select.wav");
+    PlaySE(SE_SELECT);
+}
 void AudioManager::PlayUpgradeSE() { PlaySE(SE_UPGRADE); }

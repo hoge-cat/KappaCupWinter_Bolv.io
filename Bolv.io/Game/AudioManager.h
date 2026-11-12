@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 class AudioManager : public IGameObject
 {
 public:
@@ -16,19 +18,20 @@ public:
     void PlayShootSE();
     void PlayDamageSE();
     void PlayDestroySE();
-    void PlayEvolveSE();
+    void PlayEvolveSE(bool afterSelection = false);
     void PlayGameOverSE();
     void PlayLevelUpSE();
-    void PlaySelectSE();
+    static void PlaySelectSE();
     void PlayUpgradeSE();
 
 private:
-    void PlaySE(int bankId);
+    static void PlaySE(int bankId);
 
     // ループBGMだけを保持する。ワンショットSEはエンジンが自動削除する。
     SoundSource* m_bgm = nullptr;
 
     // 射撃SEの連続生成を抑える。
+    std::vector<float> m_evolveDelays;
     float m_shootCooldown = 0.0f;
     static constexpr float SHOOT_SE_INTERVAL = 0.12f;
 };

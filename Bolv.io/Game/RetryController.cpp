@@ -5,6 +5,7 @@
 #include "Player.h"
 #include "TitleUI.h"
 #include "LoadingScreen.h"
+#include "AudioManager.h"
 #include "system/system.h"
 
 // ============================================
@@ -133,6 +134,7 @@ void RetryController::Update()
     {
         if (enterTriggered)
         {
+            AudioManager::PlaySelectSE();
             m_nextState = State::Playing;
             ClearCurrentScene();
         }
@@ -161,11 +163,13 @@ void RetryController::Update()
     // ========================================
     if (tTriggered)
     {
+        AudioManager::PlaySelectSE();
         m_nextState = State::Title;
         ClearCurrentScene();
     }
     else if (rTriggered)
     {
+        AudioManager::PlaySelectSE();
         m_nextState = State::Playing;
         ClearCurrentScene();
     }
