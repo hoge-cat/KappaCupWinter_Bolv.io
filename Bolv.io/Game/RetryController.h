@@ -16,6 +16,7 @@ private:
         WaitingForDeletion
     };
 
+    void CreateTitleScene();
     void ClearCurrentScene();
     bool AreOldObjectsDeleted() const;
 

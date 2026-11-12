@@ -13,7 +13,7 @@
 // ============================================
 void RetryController::Start()
 {
-    NewGO<TitleUI>(2, "titleUI");
+    CreateTitleScene();
     m_state = State::Title;
 }
 
@@ -62,7 +62,7 @@ void RetryController::Update()
 
         if (m_nextState == State::Title)
         {
-            NewGO<TitleUI>(2, "titleUI");
+            CreateTitleScene();
             m_state = State::Title;
         }
         else
@@ -175,11 +175,26 @@ void RetryController::Update()
     }
 }
 
+void RetryController::CreateTitleScene()
+{
+    NewGO<TitleUI>(2, "titleUI");
+    if (auto* audio = NewGO<AudioManager>(0, "titleAudioManager"))
+    {
+        audio->PlayTitleBGM();
+    }
+}
+
 // ============================================
 // 現在のシーンを削除
 // ============================================
 void RetryController::ClearCurrentScene()
 {
+    if (auto* audio = FindGO<AudioManager>("titleAudioManager"))
+    {
+        audio->StopBGM();
+        DeleteGO(audio);
+    }
+
     TitleUI* title = FindGO<TitleUI>("titleUI");
 
     if (title != nullptr)
@@ -206,6 +221,7 @@ bool RetryController::AreOldObjectsDeleted() const
     const char* names[] =
     {
         "titleUI",
+        "titleAudioManager",
         "game",
         "background",
         "player",

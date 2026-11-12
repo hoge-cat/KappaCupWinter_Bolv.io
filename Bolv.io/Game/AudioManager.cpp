@@ -78,6 +78,8 @@ void AudioManager::PlayGameBGM()
 
 void AudioManager::PlayTitleBGM()
 {
+    // Title playback can begin before the engine invokes Start().
+    g_soundEngine->ResistWaveFileBank(BGM_TITLE, "Assets/sound/bgm_title.wav");
     StopBGM();
     m_bgm = NewGO<SoundSource>(0);
     if (m_bgm != nullptr)
