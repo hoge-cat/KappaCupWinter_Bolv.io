@@ -10,6 +10,7 @@
 #include "PlayerEvolution.h"
 #include "AudioManager.h"
 #include "MuzzleSmoke.h"
+#include "PlayerGrowthEffect.h"
 
 
 class Player : public IGameObject
@@ -416,6 +417,7 @@ private:
 
     TankVisual m_tankVisual;
     MuzzleSmoke m_muzzleSmoke;
+    PlayerGrowthEffect m_growthEffect;
 
     TankWeapon m_tankWeapon;
 

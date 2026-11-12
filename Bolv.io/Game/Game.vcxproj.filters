@@ -153,6 +153,9 @@
     <ClCompile Include="MuzzleSmoke.cpp">
       <Filter>自機\本体</Filter>
     </ClCompile>
+    <ClCompile Include="PlayerGrowthEffect.cpp">
+      <Filter>自機\本体</Filter>
+    </ClCompile>
     <ClCompile Include="PlayerContact.cpp">
       <Filter>自機\接触</Filter>
     </ClCompile>
@@ -363,6 +366,9 @@
       <Filter>自機\本体</Filter>
     </ClInclude>
     <ClInclude Include="MuzzleSmoke.h">
+      <Filter>自機\本体</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerGrowthEffect.h">
       <Filter>自機\本体</Filter>
     </ClInclude>
     <ClInclude Include="PlayerContact.h">

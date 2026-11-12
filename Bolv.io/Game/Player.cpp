@@ -61,6 +61,7 @@ bool Player::Start()
 
     m_tankVisual.Init();
     m_muzzleSmoke.Init();
+    m_growthEffect.Init(m_progress.GetLevel(), static_cast<int>(m_evolution.GetCurrentClass()));
 
 
     // ============================================
@@ -100,6 +101,7 @@ bool Player::Start()
 void Player::Update()
 {
     m_muzzleSmoke.Update(g_gameTime->GetFrameDeltaTime());
+    m_growthEffect.Update(g_gameTime->GetFrameDeltaTime(), !m_health.IsDead());
 
     if (m_health.IsDead())
     {
@@ -368,6 +370,8 @@ void Player::Update()
         m_position,
         aimDirection
     );
+
+    m_growthEffect.Observe(m_progress.GetLevel(), static_cast<int>(m_evolution.GetCurrentClass()));
 }
 
 
@@ -671,4 +675,8 @@ void Player::Render(
         rc
     );
     m_muzzleSmoke.Draw();
+    if (!m_health.IsDead())
+    {
+        m_growthEffect.Draw(m_position, GetLevelScale());
+    }
 }
