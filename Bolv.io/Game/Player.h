@@ -18,10 +18,7 @@ public:
     bool Start();
 
     void NotifyShotFired(const Vector3& muzzlePosition, const Vector3& direction,
-        float bulletSizeMultiplier = 1.0f)
-    {
-        m_tankVisual.OnShotFired(muzzlePosition, direction, bulletSizeMultiplier);
-    }
+        float bulletSizeMultiplier = 1.0f);
 
     void Update();
 

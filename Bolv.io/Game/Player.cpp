@@ -4,6 +4,51 @@
 #include <cmath>
 
 
+void Player::NotifyShotFired(const Vector3& muzzlePosition, const Vector3& direction,
+    float bulletSizeMultiplier)
+{
+    if (m_health.IsDead() || bulletSizeMultiplier <= 0.0f)
+    {
+        return;
+    }
+
+    m_tankVisual.OnShotFired(muzzlePosition, direction, bulletSizeMultiplier);
+
+    // Velocity impulse per successful shot, in Bolv.io world units / second.
+    // Existing movement friction handles recovery; do not multiply by delta time.
+    constexpr float BASE_SHOT_RECOIL = 30.0f;
+    float recoilMultiplier = 1.0f;
+    switch (m_evolution.GetCurrentClass())
+    {
+    case PlayerEvolution::Smasher:
+        return;
+    case PlayerEvolution::Twin:
+    case PlayerEvolution::TwinFlank:
+    case PlayerEvolution::QuadTank:
+        recoilMultiplier = 0.5f;
+        break;
+    case PlayerEvolution::TripleShot:
+        recoilMultiplier = 0.4f;
+        break;
+    case PlayerEvolution::MachineGun:
+        recoilMultiplier = 0.65f;
+        break;
+    case PlayerEvolution::Sniper:
+    case PlayerEvolution::Assassin:
+        recoilMultiplier = 1.25f;
+        break;
+    case PlayerEvolution::Trapper:
+        recoilMultiplier = 0.8f;
+        break;
+    default:
+        break;
+    }
+
+    const float power = BASE_SHOT_RECOIL * recoilMultiplier *
+        bulletSizeMultiplier * bulletSizeMultiplier;
+    AddKnockback(direction * -1.0f, power);
+}
+
 bool Player::Start()
 {
     m_charaCon.Init(
