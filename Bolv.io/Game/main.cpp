@@ -12,16 +12,16 @@
 
 void ReportLiveObjects()
 {
-    IDXGIDebug* pDxgiDebug;
+	IDXGIDebug* pDxgiDebug;
 
-    typedef HRESULT(__stdcall* fPtr)(const IID&, void**);
-    HMODULE hDll = GetModuleHandleW(L"dxgidebug.dll");
-    fPtr DXGIGetDebugInterface = (fPtr)GetProcAddress(hDll, "DXGIGetDebugInterface");
+	typedef HRESULT(__stdcall* fPtr)(const IID&, void**);
+	HMODULE hDll = GetModuleHandleW(L"dxgidebug.dll");
+	fPtr DXGIGetDebugInterface = (fPtr)GetProcAddress(hDll, "DXGIGetDebugInterface");
 
-    DXGIGetDebugInterface(__uuidof(IDXGIDebug), (void**)&pDxgiDebug);
+	DXGIGetDebugInterface(__uuidof(IDXGIDebug), (void**)&pDxgiDebug);
 
-    // 出力。
-    pDxgiDebug->ReportLiveObjects(DXGI_DEBUG_D3D12, DXGI_DEBUG_RLO_DETAIL);
+	// 出力。
+	pDxgiDebug->ReportLiveObjects(DXGI_DEBUG_D3D12, DXGI_DEBUG_RLO_DETAIL);
 }
 
 ///////////////////////////////////////////////////////////////////
@@ -29,42 +29,44 @@ void ReportLiveObjects()
 ///////////////////////////////////////////////////////////////////
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nCmdShow)
 {
-    // DPIスケーリングによる解像度のずれを防ぐ。
-    SetProcessDPIAware();
+	// DPIスケーリングによる解像度のずれを防ぐ。
+	SetProcessDPIAware();
 
-    // ゲームの初期化。
-    InitGame(hInstance, hPrevInstance, lpCmdLine, nCmdShow, TEXT("Game"));
+	// ゲームの初期化。
+	InitGame(hInstance, hPrevInstance, lpCmdLine, nCmdShow, TEXT("Game"));
 
-    //////////////////////////////////////
-    // ここから初期化を行うコードを記述する。
-    //////////////////////////////////////
+	//////////////////////////////////////
+	// ここから初期化を行うコードを記述する。
+	//////////////////////////////////////
 
-    RetryController retryController;
-    retryController.Start();
+	RetryController retryController;
+	retryController.Start();
 
-    //////////////////////////////////////
-    // 初期化を行うコードを書くのはここまで！！！
-    //////////////////////////////////////
+	g_renderingEngine->SetDirectionLight(0, Vector3(0.0f, -1.0f, 0.0f), Vector3(0.5f, 0.5f, 0.5f));
 
-    // ここからゲームループ。
-    while (DispatchWindowMessage())
-    {
-        if (g_pad[0]->IsTrigger(enButtonA)) {
-            g_pad[0]->SetVibration(/*durationSec=*/0.5f, /*normalizedPower=*/1.0f);
-        }
+	//////////////////////////////////////
+	// 初期化を行うコードを書くのはここまで！！！
+	//////////////////////////////////////
 
-        K2Engine::GetInstance()->Execute();
+	// ここからゲームループ。
+	while (DispatchWindowMessage())
+	{
+		if (g_pad[0]->IsTrigger(enButtonA)) {
+			g_pad[0]->SetVibration(/*durationSec=*/0.5f, /*normalizedPower=*/1.0f);
+		}
 
-        // エンジンの更新・描画が終わってからリトライを処理する。
-        retryController.Update();
-    }
+		K2Engine::GetInstance()->Execute();
 
-    GameSettings::Save();
-    K2Engine::DeleteInstance();
+		// エンジンの更新・描画が終わってからリトライを処理する。
+		retryController.Update();
+	}
+
+	GameSettings::Save();
+	K2Engine::DeleteInstance();
 
 #ifdef _DEBUG
-    ReportLiveObjects();
+	ReportLiveObjects();
 #endif // _DEBUG
 
-    return 0;
+	return 0;
 }
