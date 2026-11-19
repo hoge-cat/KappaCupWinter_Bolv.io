@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "PlayerHUD.h"
 #include "Player.h"
 #include <cwchar>
@@ -65,8 +65,8 @@ bool PlayerHUD::Start()
     BolvUI::Rect(m_mapBackground, 176, 176, 825, -410, Vector4(0.75f,0.75f,0.75f,0.65f));
     BolvUI::Rect(m_mapPlayer, 8, 8, 825, -410, Vector4(0.10f,0.72f,0.93f,1));
     for(auto& dot : m_mapEnemies) { BolvUI::Rect(dot, 5, 5, 0, 0, Vector4(0.92f,0.29f,0.34f,1)); }
-    BolvUI::Center(m_scoreHeading, L"\u6226\u95d8\u30b9\u30b3\u30a2", 755, 475, 0.65f);
-    BolvUI::Center(m_mapHeading, L"\u30de\u30c3\u30d7", 825, -302, 0.5f);
+    BolvUI::Center(m_scoreHeading, L"戦闘スコア", 755, 475, 0.65f);
+    BolvUI::Center(m_mapHeading, L"マップ", 825, -302, 0.5f);
     Update();
 
     return true;
@@ -90,7 +90,7 @@ void PlayerHUD::Update()
         swprintf_s(
             levelText,
             256,
-            L"\u30ec\u30d9\u30eb45\u3000\u6700\u5927\u30ec\u30d9\u30eb"
+            L"レベル45　最大レベル"
         );
     }
     else
@@ -98,7 +98,7 @@ void PlayerHUD::Update()
         swprintf_s(
             levelText,
             256,
-            L"\u30ec\u30d9\u30eb%d\u3000\u7d4c\u9a13\u5024 %d / %d",
+            L"レベル%d　経験値 %d / %d",
             progress.GetLevel(),
             progress.GetCurrentExperience(),
             progress.GetRequiredExperience()
@@ -116,7 +116,7 @@ void PlayerHUD::Update()
     swprintf_s(
         hpText,
         256,
-        L"\u8010\u4e45\u529b %d / %d",
+        L"耐久力 %d / %d",
         health.GetHP(),
         health.GetMaxHP()
     );
@@ -129,7 +129,7 @@ void PlayerHUD::Update()
     swprintf_s(
         scoreText,
         256,
-        L"\u3042\u306a\u305f\uff1a%d",
+        L"あなた：%d",
         m_player->GetScore()
     );
 

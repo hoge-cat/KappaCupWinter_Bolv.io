@@ -301,7 +301,7 @@ void PlayerUpgradeUI::UpdateText()
         swprintf_s(
             text,
             256,
-            L"[1] \u81ea\u52d5\u56de\u5fa9  %d / 10",
+            L"[1] 自動回復  %d / 10",
             stats.GetLevel(
                 PlayerStats::HealthRegen
             )
@@ -321,7 +321,7 @@ void PlayerUpgradeUI::UpdateText()
         swprintf_s(
             text,
             256,
-            L"[2] \u6700\u5927\u8010\u4e45\u529b  %d / 10",
+            L"[2] 最大耐久力  %d / 10",
             stats.GetLevel(
                 PlayerStats::MaxHealth
             )
@@ -341,7 +341,7 @@ void PlayerUpgradeUI::UpdateText()
         swprintf_s(
             text,
             256,
-            L"[3] \u4f53\u5f53\u305f\u308a\u5a01\u529b  %d / 10",
+            L"[3] 体当たり威力  %d / 10",
             stats.GetLevel(
                 PlayerStats::BodyDamage
             )
@@ -361,7 +361,7 @@ void PlayerUpgradeUI::UpdateText()
         swprintf_s(
             text,
             256,
-            L"[4] \u79fb\u52d5\u901f\u5ea6  %d / 10",
+            L"[4] 移動速度  %d / 10",
             stats.GetLevel(
                 PlayerStats::MovementSpeed
             )
@@ -416,7 +416,7 @@ void PlayerUpgradeUI::UpdateText()
         swprintf_s(
             text,
             256,
-            L"[1] \u81ea\u52d5\u56de\u5fa9  %d / 7",
+            L"[1] 自動回復  %d / 7",
             stats.GetLevel(
                 PlayerStats::HealthRegen
             )
@@ -436,7 +436,7 @@ void PlayerUpgradeUI::UpdateText()
         swprintf_s(
             text,
             256,
-            L"[2] \u6700\u5927\u8010\u4e45\u529b  %d / 7",
+            L"[2] 最大耐久力  %d / 7",
             stats.GetLevel(
                 PlayerStats::MaxHealth
             )
@@ -456,7 +456,7 @@ void PlayerUpgradeUI::UpdateText()
         swprintf_s(
             text,
             256,
-            L"[3] \u4f53\u5f53\u305f\u308a\u5a01\u529b  %d / 7",
+            L"[3] 体当たり威力  %d / 7",
             stats.GetLevel(
                 PlayerStats::BodyDamage
             )
@@ -476,7 +476,7 @@ void PlayerUpgradeUI::UpdateText()
         swprintf_s(
             text,
             256,
-            L"[4] \u5f3e\u901f  %d / 7",
+            L"[4] 弾速  %d / 7",
             stats.GetLevel(
                 PlayerStats::BulletSpeed
             )
@@ -496,7 +496,7 @@ void PlayerUpgradeUI::UpdateText()
         swprintf_s(
             text,
             256,
-            L"[5] \u5f3e\u306e\u8cab\u901a\u529b  %d / 7",
+            L"[5] 弾の貫通力  %d / 7",
             stats.GetLevel(
                 PlayerStats::BulletPenetration
             )
@@ -516,7 +516,7 @@ void PlayerUpgradeUI::UpdateText()
         swprintf_s(
             text,
             256,
-            L"[6] \u5f3e\u306e\u5a01\u529b  %d / 7",
+            L"[6] 弾の威力  %d / 7",
             stats.GetLevel(
                 PlayerStats::BulletDamage
             )
@@ -536,7 +536,7 @@ void PlayerUpgradeUI::UpdateText()
         swprintf_s(
             text,
             256,
-            L"[7] \u9023\u5c04\u901f\u5ea6  %d / 7",
+            L"[7] 連射速度  %d / 7",
             stats.GetLevel(
                 PlayerStats::Reload
             )
@@ -556,7 +556,7 @@ void PlayerUpgradeUI::UpdateText()
         swprintf_s(
             text,
             256,
-            L"[8] \u79fb\u52d5\u901f\u5ea6  %d / 7",
+            L"[8] 移動速度  %d / 7",
             stats.GetLevel(
                 PlayerStats::MovementSpeed
             )
