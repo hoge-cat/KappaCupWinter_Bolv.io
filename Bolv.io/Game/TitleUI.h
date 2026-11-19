@@ -1,5 +1,6 @@
-#pragma once
+﻿#pragma once
 #include <array>
+#include "SettingsUI.h"
 
 class TitleUI : public IGameObject
 {
@@ -11,6 +12,7 @@ public:
     Action ConsumeAction();
 
 private:
+    SettingsUI m_settings;
     void UpdatePresentation(float deltaTime);
     void DrawPresentation(RenderContext& rc);
     static constexpr int BRICK_COUNT = 204;

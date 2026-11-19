@@ -77,6 +77,7 @@ bool TitleUI::Start()
         m_introBullet[i].SetMulColor(Vector4(0.08f, 0.73f, 0.93f, 1));
     }
     for (auto& dust : m_dust) { dust.Init("Assets/sprite/White.dds", 4, 4); }
+    m_settings.Start();
     UpdatePresentation(0);
     UpdateColors();
     return true;
@@ -84,6 +85,7 @@ bool TitleUI::Start()
 
 int TitleUI::HitTest(float x, float y) const
 {
+    if (m_settings.HitGear(x, y)) { return 3; }
     if (std::fabs(x) > BUTTON_WIDTH * 0.5f) { return -1; }
     for (int i = 0; i < 3; ++i)
     {
@@ -94,6 +96,7 @@ int TitleUI::HitTest(float x, float y) const
 
 void TitleUI::UpdateColors()
 {
+    m_settings.SetGearSelected(m_selected == 3);
     for (int i = 0; i < 3; ++i)
     {
         const bool selected = i == m_selected;
@@ -140,7 +143,9 @@ void TitleUI::UpdateNavigation(bool up, bool down, bool active, float deltaTime)
     if (navigate)
     {
         // Share the cooldown across keys and directions; never catch up in a loop.
-        m_selected = m_selected == 0 ? 2 : 0;
+        const int index = m_selected == 0 ? 0 : (m_selected == 2 ? 1 : 2);
+        const int selectable[] = { 0, 2, 3 };
+        m_selected = selectable[(index + direction + 3) % 3];
         m_navigationCooldown = INPUT_INTERVAL;
         if (m_navigationRepeat <= 0.000001f) { m_navigationRepeat = INPUT_INTERVAL; }
     }
@@ -161,6 +166,15 @@ void TitleUI::Update()
             m_presentationTime = 2.6f;
             UpdatePresentation(0);
         }
+        m_wasMousePressed = mousePressed;
+        m_wasEnterPressed = enterPressed;
+        m_navigationBlocked = true;
+        GetCursorPos(&m_lastMouse);
+        return;
+    }
+    if (m_settings.IsOpen())
+    {
+        m_settings.Update();
         m_wasMousePressed = mousePressed;
         m_wasEnterPressed = enterPressed;
         m_navigationBlocked = true;
@@ -188,7 +202,12 @@ void TitleUI::Update()
     if (clicked) { m_selected = hovered; }
     if (m_action == Action::None && (clicked || confirmed))
     {
-        m_action = m_selected == 0 ? Action::StartGame : Action::ExitGame;
+        if (m_selected == 3)
+        {
+            m_settings.Open();
+            AudioManager::PlaySelectSE();
+        }
+        else { m_action = m_selected == 0 ? Action::StartGame : Action::ExitGame; }
     }
     m_wasMousePressed = mousePressed;
     m_wasEnterPressed = enterPressed;
@@ -218,6 +237,7 @@ void TitleUI::Render(RenderContext& rc)
     m_comingSoonFont.Draw(rc);
     m_hintFont.Draw(rc);
     DrawPresentation(rc);
+    if (m_presentationTime >= 2.6f) { m_settings.Render(rc); }
 }
 
 void TitleUI::UpdatePresentation(float deltaTime)

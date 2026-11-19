@@ -7,6 +7,26 @@
 
 namespace nsK2EngineLow {
 
+    float SoundSource::s_masterVolume = 1.0f;
+    float SoundSource::s_seVolume = 1.0f;
+    float SoundSource::s_bgmVolume = 1.0f;
+    unsigned int SoundSource::s_mixRevision = 1;
+    void SoundSource::SetMixVolumes(float master, float se, float bgm)
+    {
+        auto clamp = [](float value) { return value < 0 ? 0.0f : (value > 1 ? 1.0f : value); };
+        s_masterVolume = clamp(master);
+        s_seVolume = clamp(se);
+        s_bgmVolume = clamp(bgm);
+        ++s_mixRevision;
+    }
+    void SoundSource::ApplyMixVolume()
+    {
+        if (m_sourceVoice) {
+            m_sourceVoice->SetVolume(m_baseVolume * s_masterVolume *
+                (m_category == Category::BGM ? s_bgmVolume : s_seVolume));
+        }
+        m_mixRevision = s_mixRevision;
+    }
 	SoundSource::SoundSource()
 	{
 		memset(m_emitterAzimuths, 0, sizeof(m_emitterAzimuths));
@@ -50,6 +70,7 @@ namespace nsK2EngineLow {
 
 		m_is3DSound = is3DSound;
 		m_isAvailable = true;
+        ApplyMixVolume();
 	}
 
 	void SoundSource::Play(bool isLoop)
@@ -124,6 +145,7 @@ namespace nsK2EngineLow {
 	}
 	void SoundSource::Update()
 	{
+        if (m_mixRevision != s_mixRevision) { ApplyMixVolume(); }
 		if (m_isAvailable == false) {
 			return;
 		}

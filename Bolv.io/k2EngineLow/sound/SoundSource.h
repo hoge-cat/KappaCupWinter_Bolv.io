@@ -71,10 +71,10 @@ namespace nsK2EngineLow {
 		/// ボリュームを設定。
 		/// </summary>
 		/// <param name="vol">ボリューム。</param>
-		void SetVolume(float vol)
-		{
-			m_sourceVoice->SetVolume(vol);
-		}
+        enum class Category { SE, BGM };
+        static void SetMixVolumes(float master, float se, float bgm);
+        void SetCategory(Category category) { m_category = category; ApplyMixVolume(); }
+        void SetVolume(float vol) { m_baseVolume = vol; ApplyMixVolume(); }
 		/// <summary>
 		/// ボリュームを取得。
 		/// </summary>
@@ -174,6 +174,14 @@ namespace nsK2EngineLow {
 		/// </summary>
 		void Update() override;
 	private:
+        void ApplyMixVolume();
+        Category m_category = Category::SE;
+        float m_baseVolume = 1.0f;
+        unsigned int m_mixRevision = 0;
+        static float s_masterVolume;
+        static float s_seVolume;
+        static float s_bgmVolume;
+        static unsigned int s_mixRevision;
 		std::shared_ptr<WaveFile>		m_waveFile;						//波形データ。
 		IXAudio2SourceVoice* m_sourceVoice = nullptr;		//ソースボイス。
 		bool							m_isLoop = false;				//ループフラグ。

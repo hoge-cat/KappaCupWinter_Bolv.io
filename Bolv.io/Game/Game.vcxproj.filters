@@ -564,4 +564,21 @@
       <Filter>08_素材\図形モデル</Filter>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="SettingsUI.cpp">
+      <Filter>06_UI\タイトル・ロード</Filter>
+    </ClCompile>
+    <ClInclude Include="SettingsUI.h">
+      <Filter>06_UI\タイトル・ロード</Filter>
+    </ClInclude>
+    <ClCompile Include="GameSettings.cpp">
+      <Filter>09_基盤</Filter>
+    </ClCompile>
+    <ClInclude Include="GameSettings.h">
+      <Filter>09_基盤</Filter>
+    </ClInclude>
+    <None Include="Assets\sprite\SettingsGear.dds">
+      <Filter>08_素材\画像</Filter>
+    </None>
+  </ItemGroup>
 </Project>

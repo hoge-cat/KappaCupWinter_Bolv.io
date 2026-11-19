@@ -8,6 +8,7 @@
 #include "Game.h"
 
 #include "RetryController.h"
+#include "GameSettings.h"
 
 void ReportLiveObjects()
 {
@@ -58,6 +59,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
         retryController.Update();
     }
 
+    GameSettings::Save();
     K2Engine::DeleteInstance();
 
 #ifdef _DEBUG
