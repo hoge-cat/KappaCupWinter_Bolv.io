@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "ShapeSpawner.h"
 #include "ShapeBox.h"
 #include <random>
@@ -39,7 +39,7 @@ void ShapeSpawner::CreateShapes()
                 const float dx = position.x - other.x;
                 const float dz = position.z - other.z;
 
-                if (dx * dx + dz * dz < 100.0f * 100.0f)
+                if (dx * dx + dz * dz < 120.0f * 120.0f)
                 {
                     tooClose = true;
                     break;
@@ -57,6 +57,10 @@ void ShapeSpawner::CreateShapes()
 
             if (shape != nullptr)
             {
+                // 合計30個を維持。四角形18・三角形8・五角形4を配置する。
+                const auto type = i < 18 ? ShapeBox::Type::Square :
+                    (i < 26 ? ShapeBox::Type::Triangle : ShapeBox::Type::Pentagon);
+                shape->SetType(type);
                 shape->SetPosition(position);
                 m_shapes.push_back(shape);
                 positions.push_back(position);

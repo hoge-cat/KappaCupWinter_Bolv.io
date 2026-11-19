@@ -1,4 +1,5 @@
-#pragma once
+﻿#pragma once
+#include "ShapeBox.h"
 
 class ShapeBoxRenderer : public IGameObject
 {
@@ -10,8 +11,8 @@ private:
     static const int MAX_INSTANCE =
         200;
 
-    ModelRender m_modelRender;
+    static constexpr int TYPE_COUNT = static_cast<int>(ShapeBox::Type::Count);
+    ModelRender m_modelRender[TYPE_COUNT];
 
-    int m_previousInstanceCount =
-        0;
+    int m_previousInstanceCount[TYPE_COUNT] = {};
 };

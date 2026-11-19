@@ -9,6 +9,30 @@
 
 namespace
 {
+    struct ShapeParameters
+    {
+        int hp;
+        int experience;
+        int bodyDamage;
+        float radius;
+        float scale;
+        float height;
+        Vector4 color;
+    };
+    // 通常図形の基礎値。スコア表示は既存どおり経験値の10倍。
+    const ShapeParameters SHAPES[] =
+    {
+        { 10, 10, 8, 48.0f, 1.6f, 48.0f, Vector4(0.98f, 0.81f, 0.30f, 1) },
+        { 30, 25, 8, 40.0f, 1.0f, 60.0f, Vector4(0.96f, 0.31f, 0.31f, 1) },
+        { 100, 130, 12, 52.0f, 1.0f, 60.0f, Vector4(0.32f, 0.51f, 0.94f, 1) }
+    };
+    static_assert(sizeof(SHAPES) / sizeof(SHAPES[0]) == static_cast<int>(ShapeBox::Type::Count),
+        "Shape parameters must match Type");
+    const ShapeParameters& Parameters(ShapeBox::Type type)
+    {
+        return SHAPES[static_cast<int>(type)];
+    }
+
     // ============================================
     // ShapeBoxの当たり判定範囲
     // ============================================
@@ -45,6 +69,84 @@ namespace
 // Start
 // ============================================================
 
+
+void ShapeBox::SetType(Type type)
+{
+    if (static_cast<int>(type) < 0 || type >= Type::Count) { return; }
+    m_type = type;
+    m_hp = GetMaxHP();
+    m_respawnTimer = 0.0f;
+    m_pushVelocity = Vector3::Zero;
+}
+
+int ShapeBox::GetMaxHP() const { return Parameters(m_type).hp; }
+int ShapeBox::GetExperienceReward() const { return Parameters(m_type).experience; }
+int ShapeBox::GetBodyDamageValue() const { return Parameters(m_type).bodyDamage; }
+float ShapeBox::GetCollisionRadius() const { return Parameters(m_type).radius; }
+float ShapeBox::GetRenderScale() const { return Parameters(m_type).scale; }
+float ShapeBox::GetHeight() const { return Parameters(m_type).height; }
+Vector4 ShapeBox::GetColor() const { return Parameters(m_type).color; }
+
+// 新しいモデルは原点を中心とする正多角柱。逆回転して各辺の内側を判定する。
+bool ShapeBox::IsPolygonHit(const Vector3& start, const Vector3& end, float radius) const
+{
+    const Vector3 origin = GetCenter();
+    const Vector3 a = ToCollisionSpace(start) - origin;
+    const Vector3 b = ToCollisionSpace(end) - origin;
+    const Vector3 movement = b - a;
+    float enter = 0.0f, exit = 1.0f;
+    auto clipPlane = [&](float distance, float speed)
+    {
+        if (std::fabs(speed) < 0.000001f) { return distance <= 0.0f; }
+        const float t = -distance / speed;
+        if (speed < 0.0f) { if (t > enter) { enter = t; } }
+        else if (t < exit) { exit = t; }
+        return enter <= exit;
+    };
+    if (!clipPlane(a.y - GetHeight() * 0.5f - radius, movement.y) ||
+        !clipPlane(-a.y - GetHeight() * 0.5f - radius, -movement.y)) { return false; }
+    const int sides = m_type == Type::Triangle ? 3 : 5;
+    const float r = GetCollisionRadius();
+    for (int i = 0; i < sides; ++i)
+    {
+        const float angle = -1.57079633f + 6.2831853f * i / sides;
+        const float next = -1.57079633f + 6.2831853f * (i + 1) / sides;
+        const float x = std::cos(angle) * r, z = std::sin(angle) * r;
+        const float dx = std::cos(next) * r - x, dz = std::sin(next) * r - z;
+        const float length = std::sqrt(dx * dx + dz * dz);
+        const float nx = dz / length, nz = -dx / length;
+        if (!clipPlane((a.x - x) * nx + (a.z - z) * nz - radius,
+            movement.x * nx + movement.z * nz)) { return false; }
+    }
+    return true;
+}
+
+bool ShapeBox::IsPolygonTouch(const Vector3& center, float radius) const
+{
+    const Vector3 p = ToCollisionSpace(center) - GetCenter();
+    const int sides = m_type == Type::Triangle ? 3 : 5;
+    const float r = GetCollisionRadius();
+    bool inside = true;
+    float nearestSquared = 1.0e30f;
+    for (int i = 0; i < sides; ++i)
+    {
+        const float angle = -1.57079633f + 6.2831853f * i / sides;
+        const float next = -1.57079633f + 6.2831853f * (i + 1) / sides;
+        const float x = std::cos(angle) * r, z = std::sin(angle) * r;
+        const float dx = std::cos(next) * r - x, dz = std::sin(next) * r - z;
+        if ((p.x - x) * dz - (p.z - z) * dx > 0.0f) { inside = false; }
+        float t = ((p.x - x) * dx + (p.z - z) * dz) / (dx * dx + dz * dz);
+        if (t < 0.0f) { t = 0.0f; }
+        if (t > 1.0f) { t = 1.0f; }
+        const float ex = p.x - x - dx * t, ez = p.z - z - dz * t;
+        const float d = ex * ex + ez * ez;
+        if (d < nearestSquared) { nearestSquared = d; }
+    }
+    float heightDistance = std::fabs(p.y) - GetHeight() * 0.5f;
+    if (heightDistance < 0.0f) { heightDistance = 0.0f; }
+    return (inside ? 0.0f : nearestSquared) + heightDistance * heightDistance <= radius * radius;
+}
+
 bool ShapeBox::Start()
 {
     // 図形ごとに方向・速さ・回転を変え、全体が同じ動きにならないようにする。
@@ -70,6 +172,7 @@ Quaternion ShapeBox::GetRotation() const
 
 Vector3 ShapeBox::GetRenderPosition() const
 {
+    if (m_type != Type::Square) { return GetCenter(); }
     // モデル中心がZ方向に21ずれているため、中心を軸に回すよう補正する。
     return GetCenter() + Vector3(-21.0f * std::sin(m_rotationAngle), 0,
         -21.0f * std::cos(m_rotationAngle));
@@ -111,14 +214,15 @@ void ShapeBox::UpdateMotion(float deltaTime)
         if (!other || other == this || !other->IsAlive()) { return true; }
         Vector3 away = GetCenter() - other->GetCenter();
         const float distance = std::sqrt(away.x * away.x + away.z * away.z);
-        if (distance < 96.0f)
+        const float separation = GetCollisionRadius() + other->GetCollisionRadius();
+        if (distance < separation)
         {
             if (distance < 0.001f)
             {
                 // 完全に重なった場合も、個別の漂流方向から離れる向きを決める。
                 away = Vector3(std::cos(m_driftAngle), 0, std::sin(m_driftAngle));
             }
-            AddImpulse(away, (96.0f - distance) * 2.0f * deltaTime);
+            AddImpulse(away, (separation - distance) * 2.0f * deltaTime);
         }
         return true;
     });
@@ -129,7 +233,7 @@ void ShapeBox::UpdateMotion(float deltaTime)
 
     // 回転時の角まで含めて、外周壁の内側に収める。
     const Vector3 center = GetCenter();
-    constexpr float LIMIT = 1450.0f;
+    const float LIMIT = 1500.0f - GetCollisionRadius() - 2.0f;
     if (center.x < -LIMIT || center.x > LIMIT)
     {
         const bool right = center.x > LIMIT;
@@ -171,6 +275,8 @@ bool ShapeBox::IsHit(
         return false;
     }
 
+
+    if (m_type != Type::Square) { return IsPolygonHit(start, end, bulletRadius); }
 
     // ============================================
     // 箱の判定範囲
@@ -337,8 +443,7 @@ void ShapeBox::TakeDamage(
 
     if (m_hp <= 0)
     {
-        BulletImpact::EmitDestruction(m_position + Vector3(0, 24, 21), 1.0f,
-            Vector4(0.98f, 0.81f, 0.30f, 1));
+        BulletImpact::EmitDestruction(GetCenter(), GetCollisionRadius() / 48.0f, GetColor());
         m_pushVelocity = Vector3::Zero;
         // 5秒後に復活。
         m_respawnTimer =
@@ -359,12 +464,12 @@ void ShapeBox::TakeDamage(
             rewardPlayer)
         {
             player->AddExperience(
-                10
+                GetExperienceReward()
             );
 
 
             player->AddScore(
-                100
+                GetExperienceReward() * 10
             );
         }
     }
@@ -393,7 +498,7 @@ void ShapeBox::Update()
         0.0f)
     {
         m_hp =
-            MAX_HP;
+            GetMaxHP();
 
 
         m_respawnTimer =
@@ -416,6 +521,8 @@ bool ShapeBox::IsTouch(
         return false;
     }
 
+
+    if (m_type != Type::Square) { return IsPolygonTouch(center, radius); }
 
     // ============================================
     // 箱の判定範囲

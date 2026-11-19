@@ -4,13 +4,21 @@
 class ShapeBox : public IGameObject
 {
 public:
+    enum class Type { Square, Triangle, Pentagon, Count };
+    void SetType(Type type);
+    Type GetType() const { return m_type; }
+    int GetExperienceReward() const;
+    float GetCollisionRadius() const;
+    float GetRenderScale() const;
+    float GetHeight() const;
+    Vector4 GetColor() const;
 
     bool Start();
 
     void Update();
 
     // 見た目・当たり判定・押し戻しで同じ中心と回転を使う。
-    Vector3 GetCenter() const { return m_position + Vector3(0, 24, 21); }
+    Vector3 GetCenter() const { return m_position + Vector3(0, GetHeight() * 0.5f, 21); }
     Quaternion GetRotation() const;
     Vector3 GetRenderPosition() const;
     void AddImpulse(const Vector3& direction, float strength);
@@ -51,11 +59,7 @@ public:
     }
 
 
-    int GetMaxHP() const
-    {
-        return
-            MAX_HP;
-    }
+    int GetMaxHP() const;
 
 
     bool IsDamaged() const
@@ -64,7 +68,7 @@ public:
             m_hp >
             0 &&
             m_hp <
-            MAX_HP;
+            GetMaxHP();
     }
 
 
@@ -88,7 +92,7 @@ public:
     int GetBodyDamage() const
     {
         return
-            BODY_DAMAGE;
+            GetBodyDamageValue();
     }
 
 
@@ -138,6 +142,11 @@ private:
 
 
 private:
+
+    int GetBodyDamageValue() const;
+    bool IsPolygonHit(const Vector3& start, const Vector3& end, float radius) const;
+    bool IsPolygonTouch(const Vector3& center, float radius) const;
+    Type m_type = Type::Square;
 
     void UpdateMotion(float deltaTime);
     Vector3 ToCollisionSpace(const Vector3& point) const;

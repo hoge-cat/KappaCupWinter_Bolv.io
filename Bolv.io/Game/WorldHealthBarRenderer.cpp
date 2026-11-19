@@ -1,4 +1,4 @@
-
+﻿
 #include "stdafx.h"
 #include "WorldHealthBarRenderer.h"
 
@@ -30,7 +30,7 @@ namespace
     // Shape HPバー高さ
     // ============================================
 
-    const float SHAPE_HEALTH_BAR_HEIGHT = 58.0f;
+    const float SHAPE_HEALTH_BAR_MARGIN = 10.0f;
 
     // ============================================
     // Enemy HPバー高さ
@@ -422,7 +422,7 @@ void WorldHealthBarRenderer::Render(
             // ====================================
 
             barPosition.y +=
-                SHAPE_HEALTH_BAR_HEIGHT;
+                shape->GetHeight() + SHAPE_HEALTH_BAR_MARGIN;
 
             // ====================================
             // 描画

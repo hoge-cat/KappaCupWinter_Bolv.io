@@ -1,88 +1,45 @@
 ﻿#include "stdafx.h"
 #include "ShapeBoxRenderer.h"
-#include "ShapeBox.h"
 
 bool ShapeBoxRenderer::Start()
 {
-    m_modelRender.Init(
-        "Assets/modelData/shape/ShapeBox.tkm",
-        nullptr,
-        0,
-        EnModelUpAxis::enModelUpAxisY,
-        true,
-        MAX_INSTANCE,
-        false
-    );
-
-    // 最初は全インスタンスを非表示にする。
-    for (int i = 0;
-        i < MAX_INSTANCE;
-        ++i)
+    const char* models[TYPE_COUNT] =
     {
-        m_modelRender.RemoveInstance(i);
+        "Assets/modelData/shape/ShapeBox.tkm",
+        "Assets/modelData/shape/ShapeTriangle.tkm",
+        "Assets/modelData/shape/ShapePentagon.tkm"
+    };
+    // 種類ごとにまとめて描画し、図形数が増えても描画呼び出しを抑える。
+    for (int type = 0; type < TYPE_COUNT; ++type)
+    {
+        m_modelRender[type].Init(models[type], nullptr, 0,
+            EnModelUpAxis::enModelUpAxisY, true, MAX_INSTANCE, false);
+        for (int i = 0; i < MAX_INSTANCE; ++i) { m_modelRender[type].RemoveInstance(i); }
     }
-
     return true;
 }
 
 void ShapeBoxRenderer::Render(RenderContext& rc)
 {
-    int instanceNo = 0;
-
-    QueryGOs<ShapeBox>(
-        "shapeBox",
-        [&](ShapeBox* shapeBox)
-        {
-            if (shapeBox == nullptr)
-            {
-                return true;
-            }
-
-            // 壊れている図形は描画しない。
-            if (!shapeBox->IsAlive())
-            {
-                return true;
-            }
-
-            // 最大数を超えない。
-            if (instanceNo >= MAX_INSTANCE)
-            {
-                return false;
-            }
-
-            const Vector3 renderPosition = shapeBox->GetRenderPosition();
-            const Quaternion rotation = shapeBox->GetRotation();
-
-            m_modelRender.UpdateInstancingData(
-                instanceNo,
-                renderPosition,
-                rotation,
-                Vector3(
-                    1.6f,
-                    1.6f,
-                    1.6f
-                )
-            );
-
-            ++instanceNo;
-
-            return true;
-        }
-    );
-
-    // 今フレームで使っていない
-    // インスタンスを消す。
-    for (int i = instanceNo;
-        i < m_previousInstanceCount;
-        ++i)
+    int counts[TYPE_COUNT] = {};
+    QueryGOs<ShapeBox>("shapeBox", [&](ShapeBox* shape)
     {
-        m_modelRender.RemoveInstance(
-            i
-        );
+        if (!shape || !shape->IsAlive()) { return true; }
+        const int type = static_cast<int>(shape->GetType());
+        if (counts[type] >= MAX_INSTANCE) { return true; }
+        const float scale = shape->GetRenderScale();
+        m_modelRender[type].UpdateInstancingData(counts[type]++,
+            shape->GetRenderPosition(), shape->GetRotation(), Vector3(scale, scale, scale));
+        return true;
+    });
+    for (int type = 0; type < TYPE_COUNT; ++type)
+    {
+        // 破壊された図形など、今フレームで使わないインスタンスを消す。
+        for (int i = counts[type]; i < m_previousInstanceCount[type]; ++i)
+        {
+            m_modelRender[type].RemoveInstance(i);
+        }
+        m_previousInstanceCount[type] = counts[type];
+        m_modelRender[type].Draw(rc);
     }
-
-    m_previousInstanceCount =
-        instanceNo;
-
-    m_modelRender.Draw(rc);
 }
