@@ -330,6 +330,11 @@
     <None Include="Assets\shader\PlayerGrowthEffect.fx" />
     <None Include="Assets\shader\MuzzleSmoke.fx" />
     <None Include="Assets\shader\ArenaSurface.fx" />
+    <None Include="Assets\modelData\shape\ShapeTriangle.tkm" />
+    <None Include="Assets\modelData\shape\ShapeTriangle_Albedo.DDS" />
+    <None Include="Assets\modelData\shape\ShapePentagon.tkm" />
+    <None Include="Assets\modelData\shape\ShapePentagon_Albedo.DDS" />
+    <None Include="..\tools\GeneratePolygonModels.mjs" />
     <None Include="Assets\sprite\BolvLogo.png" />
     <None Include="Assets\sprite\BolvLogo.DDS" />
     <None Include="Assets\sound\bgm_game.wav" />

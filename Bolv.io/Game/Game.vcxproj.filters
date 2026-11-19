@@ -106,6 +106,9 @@
     <Filter Include="09_基盤">
       <UniqueIdentifier>{D889584C-DDB9-45FB-A8BD-5B012A655206}</UniqueIdentifier>
     </Filter>
+    <Filter Include="08_素材\図形モデル">
+      <UniqueIdentifier>{BA7C1014-D525-4A77-AEE4-95B67723C915}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Game.cpp">
@@ -543,5 +546,22 @@
     <ResourceCompile Include="Game1.rc">
       <Filter>09_基盤</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Assets\modelData\shape\ShapeTriangle.tkm">
+      <Filter>08_素材\図形モデル</Filter>
+    </None>
+    <None Include="Assets\modelData\shape\ShapeTriangle_Albedo.DDS">
+      <Filter>08_素材\図形モデル</Filter>
+    </None>
+    <None Include="Assets\modelData\shape\ShapePentagon.tkm">
+      <Filter>08_素材\図形モデル</Filter>
+    </None>
+    <None Include="Assets\modelData\shape\ShapePentagon_Albedo.DDS">
+      <Filter>08_素材\図形モデル</Filter>
+    </None>
+    <None Include="..\tools\GeneratePolygonModels.mjs">
+      <Filter>08_素材\図形モデル</Filter>
+    </None>
   </ItemGroup>
 </Project>
