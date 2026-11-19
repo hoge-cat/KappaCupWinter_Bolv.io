@@ -329,6 +329,7 @@
     <ClInclude Include="PlayerGrowthEffect.h" />
     <None Include="Assets\shader\PlayerGrowthEffect.fx" />
     <None Include="Assets\shader\MuzzleSmoke.fx" />
+    <None Include="Assets\shader\ArenaSurface.fx" />
     <None Include="Assets\sprite\BolvLogo.png" />
     <None Include="Assets\sprite\BolvLogo.DDS" />
     <None Include="Assets\sound\bgm_game.wav" />
