@@ -1,4 +1,4 @@
-
+﻿
 #include "stdafx.h"
 #include "LoadingScreen.h"
 #include <cmath>
@@ -34,10 +34,10 @@ bool LoadingScreen::Start()
     m_loadingIndicator.SetPosition(Vector3(-168.0f, -165.0f, 0.0f));
     m_loadingIndicator.Update();
     // ロード中の文字
-    CenterLoadingText(m_loadingFont, L"\u8aad\u307f\u8fbc\u307f\u4e2d", 1.0f, -65.0f);
+    CenterLoadingText(m_loadingFont, L"読み込み中", 1.0f, -65.0f);
     m_loadingFont.SetColor(Vector4(0.90f, 0.96f, 1.0f, 1.0f));
     CenterLoadingText(m_hintFont,
-        L"WASD\uff1a\u79fb\u52d5\u3000\u30de\u30a6\u30b9\uff1a\u7167\u6e96\u3000\u5de6\u30af\u30ea\u30c3\u30af\uff1a\u5c04\u6483\u3000\u53f3\u30af\u30ea\u30c3\u30af\u9577\u62bc\u3057\uff1a\u30ab\u30fc\u30bd\u30eb\u64cd\u4f5c", 0.6f, -405.0f);
+        L"WASD：移動　マウス：照準　左クリック：射撃　右クリック長押し：カーソル操作", 0.6f, -405.0f);
     m_hintFont.SetColor(Vector4(0.48f, 0.62f, 0.73f, 1.0f));
 
     return true;

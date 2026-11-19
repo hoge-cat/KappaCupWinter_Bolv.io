@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "GameOverUI.h"
 #include "Player.h"
 #include "AudioManager.h"
@@ -28,7 +28,7 @@ bool GameOverUI::Start()
 
     BolvUI::Rect(m_panelBorder, 784, 244, 0, 0, Vector4(0.18f,0.18f,0.18f,0.9f));
     BolvUI::Rect(m_panel, 776, 236, 0, 0, Vector4(0.62f,0.62f,0.62f,0.95f));
-    BolvUI::Center(m_fontRender, L"\u30b2\u30fc\u30e0\u30aa\u30fc\u30d0\u30fc", 0, 55, 1.25f);
+    BolvUI::Center(m_fontRender, L"ゲームオーバー", 0, 55, 1.25f);
 
     return true;
 }
@@ -50,7 +50,7 @@ void GameOverUI::Update()
     swprintf_s(
         text,
         256,
-        L"\u30b9\u30b3\u30a2\uff1a%d\u3000\u30ec\u30d9\u30eb\uff1a%d\u3000[R] \u518d\u6311\u6226\u3000[T] \u30bf\u30a4\u30c8\u30eb\u3078",
+        L"スコア：%d　レベル：%d　[R] 再挑戦　[T] タイトルへ",
         m_player->GetScore(),
         progress.GetLevel()
     );

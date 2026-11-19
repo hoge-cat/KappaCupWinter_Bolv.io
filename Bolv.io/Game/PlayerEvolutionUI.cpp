@@ -212,7 +212,7 @@ void PlayerEvolutionUI::Update()
     // ============================================
 
     m_titleFontRender.SetText(
-        L"\u9032\u5316\u5148\u3092\u9078\u629e\uff08\u53f3\u30af\u30ea\u30c3\u30af\u9577\u62bc\u3057\uff0b\u5de6\u30af\u30ea\u30c3\u30af\uff09"
+        L"進化先を選択（右クリック長押し＋左クリック）"
     );
     BolvUI::Center(m_titleFontRender, m_titleFontRender.GetText(), -740, 495, 0.42f);
 
@@ -471,7 +471,7 @@ PlayerEvolutionUI::GetTankClassName(
     if (tankClass ==
         PlayerEvolution::Basic)
     {
-        return L"\u57fa\u672c\u6226\u8eca";
+        return L"基本戦車";
     }
 
 
@@ -482,7 +482,7 @@ PlayerEvolutionUI::GetTankClassName(
     if (tankClass ==
         PlayerEvolution::Twin)
     {
-        return L"\u30c4\u30a4\u30f3";
+        return L"ツイン";
     }
 
 
@@ -493,7 +493,7 @@ PlayerEvolutionUI::GetTankClassName(
     if (tankClass ==
         PlayerEvolution::TripleShot)
     {
-        return L"\u30c8\u30ea\u30d7\u30eb\u30b7\u30e7\u30c3\u30c8";
+        return L"トリプルショット";
     }
 
 
@@ -504,7 +504,7 @@ PlayerEvolutionUI::GetTankClassName(
     if (tankClass ==
         PlayerEvolution::QuadTank)
     {
-        return L"\u30af\u30a2\u30c3\u30c9\u30bf\u30f3\u30af";
+        return L"クアッドタンク";
     }
 
 
@@ -515,7 +515,7 @@ PlayerEvolutionUI::GetTankClassName(
     if (tankClass ==
         PlayerEvolution::TwinFlank)
     {
-        return L"\u30c4\u30a4\u30f3\u30d5\u30e9\u30f3\u30af";
+        return L"ツインフランク";
     }
 
 
@@ -526,7 +526,7 @@ PlayerEvolutionUI::GetTankClassName(
     if (tankClass ==
         PlayerEvolution::Sniper)
     {
-        return L"\u30b9\u30ca\u30a4\u30d1\u30fc";
+        return L"スナイパー";
     }
 
 
@@ -537,7 +537,7 @@ PlayerEvolutionUI::GetTankClassName(
     if (tankClass ==
         PlayerEvolution::Assassin)
     {
-        return L"\u30a2\u30b5\u30b7\u30f3";
+        return L"アサシン";
     }
 
 
@@ -548,7 +548,7 @@ PlayerEvolutionUI::GetTankClassName(
     if (tankClass ==
         PlayerEvolution::Hunter)
     {
-        return L"\u30cf\u30f3\u30bf\u30fc";
+        return L"ハンター";
     }
 
 
@@ -559,7 +559,7 @@ PlayerEvolutionUI::GetTankClassName(
     if (tankClass ==
         PlayerEvolution::Trapper)
     {
-        return L"\u30c8\u30e9\u30c3\u30d1\u30fc";
+        return L"トラッパー";
     }
 
 
@@ -570,7 +570,7 @@ PlayerEvolutionUI::GetTankClassName(
     if (tankClass ==
         PlayerEvolution::MachineGun)
     {
-        return L"\u30de\u30b7\u30f3\u30ac\u30f3";
+        return L"マシンガン";
     }
 
 
@@ -581,7 +581,7 @@ PlayerEvolutionUI::GetTankClassName(
     if (tankClass ==
         PlayerEvolution::FlankGuard)
     {
-        return L"\u30d5\u30e9\u30f3\u30af\u30ac\u30fc\u30c9";
+        return L"フランクガード";
     }
 
 
@@ -592,7 +592,7 @@ PlayerEvolutionUI::GetTankClassName(
     if (tankClass ==
         PlayerEvolution::Smasher)
     {
-        return L"\u30b9\u30de\u30c3\u30b7\u30e3\u30fc";
+        return L"スマッシャー";
     }
 
 
@@ -603,7 +603,7 @@ PlayerEvolutionUI::GetTankClassName(
     if (tankClass ==
         PlayerEvolution::Sprayer)
     {
-        return L"\u30b9\u30d7\u30ec\u30a4\u30e4\u30fc";
+        return L"スプレイヤー";
     }
 
 

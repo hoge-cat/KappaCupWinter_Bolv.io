@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "TitleUI.h"
 #include "AudioManager.h"
 #include "system/system.h"
@@ -43,12 +43,12 @@ bool TitleUI::Start()
     m_logo.Init("Assets/sprite/BolvLogo.DDS", 880.0f, 880.0f * 793.0f / 1983.0f);
     PlaceSprite(m_logo, 315.0f);
     m_logo.Update();
-    CenterText(m_subtitleFont, L"3D\u6226\u8eca\u30b7\u30e5\u30fc\u30c6\u30a3\u30f3\u30b0", 0.8f, 180.0f);
+    CenterText(m_subtitleFont, L"3D戦車シューティング", 0.8f, 180.0f);
     m_subtitleFont.SetColor(Vector4(0.48f, 0.62f, 0.73f, 1.0f));
     const wchar_t* labels[] = {
-        L"\u30b2\u30fc\u30e0\u30b9\u30bf\u30fc\u30c8",
-        L"\u6226\u8eca\u56f3\u9451",
-        L"\u30b2\u30fc\u30e0\u7d42\u4e86"
+        L"ゲームスタート",
+        L"戦車図鑑",
+        L"ゲーム終了"
     };
     for (int i = 0; i < 3; ++i)
     {
@@ -60,9 +60,9 @@ bool TitleUI::Start()
         m_buttonFills[i].Update();
         CenterText(m_buttonLabels[i], labels[i], 1.0f, BUTTON_Y[i] + (i == 1 ? 12.0f : 0.0f));
     }
-    CenterText(m_comingSoonFont, L"\u6e96\u5099\u4e2d", 0.55f, BUTTON_Y[1] - 22.0f);
+    CenterText(m_comingSoonFont, L"準備中", 0.55f, BUTTON_Y[1] - 22.0f);
     m_comingSoonFont.SetColor(Vector4(0.36f, 0.44f, 0.52f, 1.0f));
-    CenterText(m_hintFont, L"WASD\u30fb\u4e0a\u4e0b\u30ad\u30fc\u30fbTab\uff1a\u9078\u629e\u3000Enter\uff0fSpace\uff1a\u6c7a\u5b9a\u3000\u5de6\u30af\u30ea\u30c3\u30af\u3067\u3082\u64cd\u4f5c\u53ef\u80fd", 0.55f, -465.0f);
+    CenterText(m_hintFont, L"WASD・上下キー・Tab：選択　Enter／Space：決定　左クリックでも操作可能", 0.55f, -465.0f);
     m_hintFont.SetColor(Vector4(0.35f, 0.46f, 0.57f, 1.0f));
     GetCursorPos(&m_lastMouse);
     m_wasMousePressed = Pressed(VK_LBUTTON);
