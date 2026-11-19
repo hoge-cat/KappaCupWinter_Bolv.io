@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 class RetryController
 {
@@ -13,6 +13,7 @@ private:
         Loading,
         WaitingForGameReady,
         Playing,
+        Paused,
         ClearResult,
         WaitingForDeletion
     };
@@ -28,6 +29,7 @@ private:
     bool m_wasRPressed = false;
     bool m_wasTPressed = false;
     bool m_wasF3Pressed = false;
+    bool m_wasEscapePressed = false;
     int m_clearScore = 0;
     int m_clearLevel = 1;
 

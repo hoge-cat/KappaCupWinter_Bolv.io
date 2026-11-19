@@ -288,6 +288,9 @@
     <ClCompile Include="TitleUI.cpp">
       <Filter>06_UI\タイトル・ロード</Filter>
     </ClCompile>
+    <ClCompile Include="PauseUI.cpp">
+      <Filter>06_UI\プレイ中</Filter>
+    </ClCompile>
     <ClCompile Include="PlayerEvolutionUI.cpp">
       <Filter>06_UI\プレイ中</Filter>
     </ClCompile>
@@ -439,6 +442,9 @@
     </ClInclude>
     <ClInclude Include="TitleUI.h">
       <Filter>06_UI\タイトル・ロード</Filter>
+    </ClInclude>
+    <ClInclude Include="PauseUI.h">
+      <Filter>06_UI\プレイ中</Filter>
     </ClInclude>
     <ClInclude Include="PlayerEvolutionUI.h">
       <Filter>06_UI\プレイ中</Filter>

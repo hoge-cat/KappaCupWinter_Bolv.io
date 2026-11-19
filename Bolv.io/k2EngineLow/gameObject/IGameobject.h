@@ -36,6 +36,7 @@ namespace nsK2EngineLow {
 		/*!
 			*@brief	XV
 			*/
+		virtual bool RunsWhilePaused() const { return false; }
 		virtual void Update() {}
 		/*!
 		 *@brief	•`‰æ

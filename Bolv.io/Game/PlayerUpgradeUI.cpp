@@ -43,7 +43,7 @@ PlayerUpgradeUI::~PlayerUpgradeUI()
 bool PlayerUpgradeUI::CanAcceptInput() const
 {
     const auto* game = FindGO<Game>("game");
-    return GetForegroundWindow() == g_hWnd && m_player && !m_player->GetHealth().IsDead() && game && game->IsReady();
+    return GetForegroundWindow() == g_hWnd && m_player && !m_player->GetHealth().IsDead() && game && game->IsReady() && !game->IsPaused();
 }
 
 int PlayerUpgradeUI::GetRowCount() const

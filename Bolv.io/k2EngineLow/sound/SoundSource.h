@@ -19,6 +19,7 @@ namespace nsK2EngineLow {
 		/// コンストラクタ。
 		/// </summary>
 		SoundSource();
+		bool RunsWhilePaused() const override { return true; }
 		/// <summary>
 		/// デストラクタ。
 		/// </summary>

@@ -55,6 +55,8 @@ namespace nsK2EngineLow {
 		/// 更新処理を実行
 		/// </summary>
 		void ExecuteUpdate();
+		void SetUpdatePaused(bool paused) { m_updatePaused = paused; }
+		bool IsUpdatePaused() const { return m_updatePaused; }
 		/// <summary>
 		/// 描画処理を実行。
 		/// </summary>
@@ -163,6 +165,7 @@ namespace nsK2EngineLow {
 		}
 
 	private:
+		bool m_updatePaused = false;
 		//全てのゲームオブジェクトを削除する。
 		void DeleteAllGameObjects()
 		{

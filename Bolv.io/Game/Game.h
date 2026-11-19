@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "ShapeSpawner.h"
 #include "EnemySpawner.h"
@@ -37,11 +37,14 @@ public:
 	void Render(RenderContext& rc);
 
 	bool IsReady() const;
+    bool IsPaused() const { return m_paused; }
+    void SetPaused(bool paused);
 	void ClearGameObjects();
 	void StartGameBGM();
 
 
 private:
+    bool m_paused = false;
     BulletImpact* m_bulletImpact = nullptr;
 	Background* m_background =
 		nullptr;

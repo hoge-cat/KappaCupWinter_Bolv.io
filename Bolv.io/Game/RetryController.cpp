@@ -1,10 +1,11 @@
-
+﻿
 #include "stdafx.h"
 #include "RetryController.h"
 #include "Game.h"
 #include "Player.h"
 #include "TitleUI.h"
 #include "ClearResultUI.h"
+#include "PauseUI.h"
 #include "LoadingScreen.h"
 #include "AudioManager.h"
 #include "system/system.h"
@@ -17,6 +18,7 @@ void RetryController::Start()
     CreateTitleScene();
     m_state = State::Title;
     m_wasF3Pressed = (GetAsyncKeyState(VK_F3) & 0x8000) != 0;
+    m_wasEscapePressed = (GetAsyncKeyState(VK_ESCAPE) & 0x8000) != 0;
 }
 
 // ============================================
@@ -48,6 +50,9 @@ void RetryController::Update()
     const bool f3Pressed = (GetAsyncKeyState(VK_F3) & 0x8000) != 0;
     const bool clearTriggered = isActive && f3Pressed && !m_wasF3Pressed;
     m_wasF3Pressed = f3Pressed;
+    const bool escapePressed = (GetAsyncKeyState(VK_ESCAPE) & 0x8000) != 0;
+    const bool pauseTriggered = isActive && escapePressed && !m_wasEscapePressed;
+    m_wasEscapePressed = escapePressed;
 
     m_wasEnterPressed = enterPressed;
     m_wasRPressed = rPressed;
@@ -176,12 +181,44 @@ void RetryController::Update()
         return;
     }
 
+    if (m_state == State::Paused)
+    {
+        auto* menu = FindGO<PauseUI>("pauseUI");
+        const auto action = menu && menu->IsStart() ? menu->ConsumeAction() : PauseUI::Action::None;
+        if (pauseTriggered || action == PauseUI::Action::Resume)
+        {
+            AudioManager::PlaySelectSE();
+            if (auto* game = FindGO<Game>("game")) { game->SetPaused(false); }
+            if (menu) { DeleteGO(menu); }
+            m_state = State::Playing;
+        }
+        else if (action == PauseUI::Action::Restart || action == PauseUI::Action::Title)
+        {
+            AudioManager::PlaySelectSE();
+            m_nextState = action == PauseUI::Action::Restart ? State::Playing : State::Title;
+            ClearCurrentScene();
+        }
+        return;
+    }
+
     if (m_state != State::Playing)
     {
         return;
     }
 
     Player* player = FindGO<Player>("player");
+
+    if (pauseTriggered && player && !player->GetHealth().IsDead())
+    {
+        if (auto* game = FindGO<Game>("game"))
+        {
+            game->SetPaused(true);
+            NewGO<PauseUI>(200, "pauseUI");
+            AudioManager::PlaySelectSE();
+            m_state = State::Paused;
+        }
+        return;
+    }
 
     if (clearTriggered && player != nullptr && !player->GetHealth().IsDead())
     {
@@ -227,6 +264,7 @@ void RetryController::CreateTitleScene()
 // ============================================
 void RetryController::ClearCurrentScene()
 {
+    if (auto* menu = FindGO<PauseUI>("pauseUI")) { DeleteGO(menu); }
     if (auto* result = FindGO<ClearResultUI>("clearResultUI")) { DeleteGO(result); }
     if (auto* audio = FindGO<AudioManager>("titleAudioManager"))
     {
@@ -259,6 +297,7 @@ bool RetryController::AreOldObjectsDeleted() const
 {
     const char* names[] =
     {
+        "pauseUI",
         "clearResultUI",
         "bulletImpact",
         "titleUI",

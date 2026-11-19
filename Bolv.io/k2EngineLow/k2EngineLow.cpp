@@ -97,7 +97,8 @@ namespace nsK2EngineLow {
 		g_soundEngine->Update();
 		GameObjectManager::GetInstance()->ExecuteUpdate();
 		// エフェクトエンジンの更新。
-		EffectEngine::GetInstance()->Update(g_gameTime->GetFrameDeltaTime());
+		EffectEngine::GetInstance()->Update(g_gameTime->GetFrameDeltaTime(),
+			!GameObjectManager::GetInstance()->IsUpdatePaused());
 	}
 	/// <summary>
 	/// 描画処理を実行。

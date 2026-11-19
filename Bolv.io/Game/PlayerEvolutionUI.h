@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 
 class Player;
@@ -23,6 +23,7 @@ public:
     bool Start();
 
     void Update();
+    void ResetInputAfterPause() { m_leftMousePressed = (GetAsyncKeyState(VK_LBUTTON) & 0x8000) != 0; }
 
     void Render(
         RenderContext& rc
