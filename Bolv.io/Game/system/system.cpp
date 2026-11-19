@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "system.h"
+#include "../PlayerUpgradeUI.h"
 #include "graphics/GraphicsEngine.h"
 #include "graphics/RenderingEngine.h"
 #include "sound/SoundEngine.h"
@@ -20,6 +21,7 @@ LRESULT CALLBACK MsgProc(
     WPARAM wParam,
     LPARAM lParam)
 {
+    PlayerUpgradeUI::HandleWindowMessage(msg, wParam, lParam);
     switch (msg)
     {
     case WM_DESTROY:

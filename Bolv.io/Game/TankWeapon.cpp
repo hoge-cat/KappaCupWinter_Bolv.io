@@ -3,6 +3,7 @@
 #include "Bullet.h"
 #include "system/system.h"
 #include "Player.h"
+#include "PlayerUpgradeUI.h"
 #include "AudioManager.h"
 
 #include <cmath>
@@ -176,6 +177,7 @@ void TankWeapon::Update(
     // ============================================
 
     const bool leftMouse =
+        !PlayerUpgradeUI::PointerBlocksShooting() &&
         (
             GetAsyncKeyState(
                 VK_LBUTTON
