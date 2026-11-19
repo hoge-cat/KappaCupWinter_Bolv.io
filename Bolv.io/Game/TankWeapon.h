@@ -8,6 +8,12 @@
 class TankWeapon
 {
 public:
+    void ResetInputAfterPause()
+    {
+        m_waitForFireRelease = true;
+        m_hunterSecondShotPending = false;
+        m_hunterSecondShotRemainingTime = 0.0f;
+    }
 
     void Update(
         const Vector3& playerPosition,
@@ -16,6 +22,7 @@ public:
 
 
 private:
+    bool m_waitForFireRelease = false;
 
     // ========================================================
     // 共通Bullet生成

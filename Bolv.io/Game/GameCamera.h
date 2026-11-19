@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 class Player;
 
@@ -7,6 +7,7 @@ class GameCamera : public IGameObject
 public:
     bool Start();
     void Update();
+    void ResetMouseInput() { m_mouseReady = false; m_cursorVisible = true; }
 
 private:
     void UpdateMouseRotation();

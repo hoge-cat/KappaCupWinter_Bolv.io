@@ -252,6 +252,7 @@
     <ClCompile Include="PlayerEvolution.cpp" />
     <ClCompile Include="PlayerEvolutionUI.cpp" />
     <ClCompile Include="PlayerHealth.cpp" />
+    <ClCompile Include="PauseUI.cpp" />
     <ClCompile Include="PlayerHUD.cpp" />
     <ClCompile Include="PlayerProgress.cpp" />
     <ClCompile Include="PlayerScore.cpp" />
@@ -346,6 +347,7 @@
     <ClInclude Include="PlayerEvolution.h" />
     <ClInclude Include="PlayerEvolutionUI.h" />
     <ClInclude Include="PlayerHealth.h" />
+    <ClInclude Include="PauseUI.h" />
     <ClInclude Include="PlayerHUD.h" />
     <ClInclude Include="InGameUI.h" />
     <ClInclude Include="PlayerProgress.h" />

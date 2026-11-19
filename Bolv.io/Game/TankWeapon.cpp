@@ -85,6 +85,12 @@ void TankWeapon::Update(
     m_remainingTime -=
         deltaTime;
 
+    if (m_waitForFireRelease)
+    {
+        if ((GetAsyncKeyState(VK_LBUTTON) & 0x8000) == 0) { m_waitForFireRelease = false; }
+        return;
+    }
+
 
     // ============================================
     // マウス位置取得

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "TankVisual.h"
 #include "TankWeapon.h"
@@ -24,6 +24,7 @@ public:
         float bulletSizeMultiplier = 1.0f);
 
     void Update();
+    void ResetInputAfterPause();
 
     void Render(
         RenderContext& rc

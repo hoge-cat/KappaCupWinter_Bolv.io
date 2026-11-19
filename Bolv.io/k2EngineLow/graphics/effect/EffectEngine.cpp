@@ -67,7 +67,7 @@ namespace nsK2EngineLow {
 	}
 
 
-	void EffectEngine::Update(float deltaTime)
+	void EffectEngine::Update(float deltaTime, bool advanceSimulation)
 	{
 		int backBufferNo = g_graphicsEngine->GetBackBufferIndex();
 		// Begin a command list
@@ -75,14 +75,14 @@ namespace nsK2EngineLow {
 		EffekseerRendererDX12::BeginCommandList(m_commandList[backBufferNo], g_graphicsEngine->GetCommandList());
 		m_renderer[backBufferNo]->SetCommandList(m_commandList[backBufferNo]);
 
-		m_manager->Update();
+		if (advanceSimulation) { m_manager->Update(); }
 
 		//レンダラーにカメラ行列を設定。
 		m_renderer[backBufferNo]->SetCameraMatrix(*(const Effekseer::Matrix44*)&g_camera3D->GetViewMatrix());
 		//レンダラーにプロジェクション行列を設定。
 		m_renderer[backBufferNo]->SetProjectionMatrix(*(const Effekseer::Matrix44*)&g_camera3D->GetProjectionMatrix());
 
-		m_renderer[backBufferNo]->SetTime(deltaTime);
+		if (advanceSimulation) { m_renderer[backBufferNo]->SetTime(deltaTime); }
 	}
 
 	void EffectEngine::BeginFrame()

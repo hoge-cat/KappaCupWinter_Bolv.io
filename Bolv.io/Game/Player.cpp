@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "Player.h"
 
 #include <cmath>
@@ -48,6 +48,12 @@ void Player::NotifyShotFired(const Vector3& muzzlePosition, const Vector3& direc
     const float power = BASE_SHOT_RECOIL * recoilMultiplier *
         bulletSizeMultiplier * bulletSizeMultiplier;
     AddKnockback(direction * -1.0f, power);
+}
+
+void Player::ResetInputAfterPause()
+{
+    m_debugLevelUpKeyPressed = (GetAsyncKeyState(VK_F2) & 0x8000) != 0;
+    m_tankWeapon.ResetInputAfterPause();
 }
 
 bool Player::Start()

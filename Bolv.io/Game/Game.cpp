@@ -1,4 +1,4 @@
-
+﻿
 #include "stdafx.h"
 #include "Game.h"
 
@@ -200,6 +200,23 @@ bool Game::Start()
 }
 
 // ============================================
+// ポーズ切り替え
+// ============================================
+void Game::SetPaused(bool paused)
+{
+    if (m_paused == paused) { return; }
+    m_paused = paused;
+    GameObjectManager::GetInstance()->SetUpdatePaused(paused);
+    if (!paused)
+    {
+        // メニューのクリックやマウス移動を、そのまま射撃・カメラ回転へ持ち越さない。
+        if (m_player) { m_player->ResetInputAfterPause(); }
+        if (m_gameCamera) { m_gameCamera->ResetMouseInput(); }
+        if (m_playerEvolutionUI) { m_playerEvolutionUI->ResetInputAfterPause(); }
+    }
+}
+
+// ============================================
 // インゲームBGM開始
 // ============================================
 void Game::StartGameBGM()
@@ -242,6 +259,7 @@ void Game::Render(RenderContext& rc)
 // ============================================
 void Game::ClearGameObjects()
 {
+    SetPaused(false);
     DeleteGO(m_bulletImpact);
     m_bulletImpact = nullptr;
     // ========================================

@@ -104,7 +104,7 @@ namespace nsK2EngineLow {
 		/// 更新
 		/// </summary>
 		/// <param name="deltaTime">1フレームの経過時間。</param>
-		void Update(float deltaTime);
+		void Update(float deltaTime, bool advanceSimulation = true);
 		/// <summary>
 		/// 描画。
 		/// </summary>
