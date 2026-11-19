@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -330,6 +330,18 @@
     <None Include="Assets\shader\MuzzleSmoke.fx" />
     <None Include="Assets\sprite\BolvLogo.png" />
     <None Include="Assets\sprite\BolvLogo.DDS" />
+    <None Include="Assets\sound\bgm_game.wav" />
+    <None Include="Assets\sound\bgm_title.wav" />
+    <None Include="Assets\sound\se_damage.wav" />
+    <None Include="Assets\sound\se_destroy.wav" />
+    <None Include="Assets\sound\se_evolve.wav" />
+    <None Include="Assets\sound\se_gameover.wav" />
+    <None Include="Assets\sound\se_levelup.wav" />
+    <None Include="Assets\sound\se_select.wav" />
+    <None Include="Assets\sound\se_shoot.wav" />
+    <None Include="Assets\sound\se_title_bricks.wav" />
+    <None Include="Assets\sound\se_title_flyby.wav" />
+    <None Include="Assets\sound\se_upgrade.wav" />
     <ClInclude Include="PlayerContact.h" />
     <ClInclude Include="PlayerEvolution.h" />
     <ClInclude Include="PlayerEvolutionUI.h" />
