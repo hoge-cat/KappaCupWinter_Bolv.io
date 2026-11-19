@@ -22,3 +22,5 @@ void InitGame(
 // ウィンドウメッセージをディスパッチ。
 // falseが返ってきたらゲーム終了。
 bool DispatchWindowMessage();
+bool SetGameFullscreen(bool fullscreen);
+bool IsGameFullscreen();

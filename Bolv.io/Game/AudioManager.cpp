@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "AudioManager.h"
 
 namespace
@@ -75,6 +75,7 @@ void AudioManager::PlayGameBGM()
     if (m_bgm != nullptr)
     {
         m_bgm->Init(BGM_GAME);
+        m_bgm->SetCategory(SoundSource::Category::BGM);
         m_bgm->SetVolume(BGM_VOLUME);
         m_bgm->Play(true);
     }
@@ -89,6 +90,7 @@ void AudioManager::PlayTitleBGM()
     if (m_bgm != nullptr)
     {
         m_bgm->Init(BGM_TITLE);
+        m_bgm->SetCategory(SoundSource::Category::BGM);
         m_bgm->SetVolume(BGM_VOLUME);
         m_bgm->Play(true);
     }

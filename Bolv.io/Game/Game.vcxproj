@@ -383,4 +383,11 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
+  <ItemGroup>
+    <ClCompile Include="SettingsUI.cpp" />
+    <ClInclude Include="SettingsUI.h" />
+    <ClCompile Include="GameSettings.cpp" />
+    <ClInclude Include="GameSettings.h" />
+    <None Include="Assets\sprite\SettingsGear.dds" />
+  </ItemGroup>
 </Project>
