@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 
 class ShapeBox : public IGameObject
@@ -8,6 +8,12 @@ public:
     bool Start();
 
     void Update();
+
+    // 見た目・当たり判定・押し戻しで同じ中心と回転を使う。
+    Vector3 GetCenter() const { return m_position + Vector3(0, 24, 21); }
+    Quaternion GetRotation() const;
+    Vector3 GetRenderPosition() const;
+    void AddImpulse(const Vector3& direction, float strength);
 
     void Render(
         RenderContext& rc
@@ -132,6 +138,16 @@ private:
 
 
 private:
+
+    void UpdateMotion(float deltaTime);
+    Vector3 ToCollisionSpace(const Vector3& point) const;
+
+    float m_driftAngle = 0.0f;
+    float m_driftSpeed = 0.0f;
+    float m_turnSpeed = 0.0f;
+    float m_rotationAngle = 0.0f;
+    float m_spinSpeed = 0.0f;
+    Vector3 m_pushVelocity = Vector3::Zero;
 
     Vector3 m_position =
         Vector3::Zero;

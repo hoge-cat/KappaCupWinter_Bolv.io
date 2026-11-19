@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 
 #include "Trap.h"
 
@@ -768,6 +768,7 @@ void Trap::Update()
             // ShapeへDamage
             // ================================================
 
+            shape->AddImpulse(nextPosition - previousPosition, 28.0f);
             shape
                 ->TakeDamage(
                     actualDamage

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 
 #include "Bullet.h"
 #include "BulletImpact.h"
@@ -747,6 +747,7 @@ void Bullet::Update()
 
             BulletImpact::AtHit(previousPosition, nextPosition, m_levelScale, false,
                 [&](const Vector3& end) { return shapeBox->IsHit(previousPosition, end, m_radius); });
+            shapeBox->AddImpulse(nextPosition - previousPosition, 38.0f);
             shapeBox
                 ->TakeDamage(
                     actualDamage
