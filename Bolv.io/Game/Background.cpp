@@ -17,7 +17,9 @@ bool Background::Start()
     // ============================================
 
     m_modelRender.Init(
-        "Assets/modelData/ground.tkm"
+        "Assets/modelData/ground.tkm",
+        nullptr, 0, enModelUpAxisZ, true, 1, false,
+        "Assets/shader/ArenaSurface.fx"
     );
 
 

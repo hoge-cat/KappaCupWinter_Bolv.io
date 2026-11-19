@@ -487,6 +487,9 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Assets\shader\ArenaSurface.fx">
+      <Filter>07_演出・音声</Filter>
+    </None>
     <None Include="Assets\shader\MuzzleSmoke.fx">
       <Filter>07_演出・音声</Filter>
     </None>

@@ -6,7 +6,9 @@ void StageWall::Init(
     const Vector3& scale)
 {
     m_modelRender.Init(
-        "Assets/modelData/stage/StageWall.tkm"
+        "Assets/modelData/stage/StageWall.tkm",
+        nullptr, 0, enModelUpAxisZ, true, 1, false,
+        "Assets/shader/ArenaSurface.fx"
     );
 
     m_modelRender.SetPosition(position);
