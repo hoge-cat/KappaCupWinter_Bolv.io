@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "EnemyContact.h"
 
 #include "Enemy.h"
@@ -564,6 +564,7 @@ void EnemyContact::UpdateShapeContact(
             if (m_damageTimer <=
                 0.0f)
             {
+                shape->AddImpulse(shape->GetCenter() - enemyCenter, 45.0f);
                 // Enemy → Shape
                 shape->TakeDamage(
                     enemy

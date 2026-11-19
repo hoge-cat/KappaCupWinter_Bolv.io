@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "PlayerContact.h"
 #include "Player.h"
 #include "ShapeBox.h"
@@ -137,6 +137,7 @@ void PlayerContact::Update(
                     0.0f;
 
 
+                shape->AddImpulse(shape->GetCenter() - center, 55.0f);
                 player.AddKnockback(
                     knockbackDirection,
                     SHAPE_KNOCKBACK_POWER

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "EnemyBullet.h"
 #include "BulletImpact.h"
 
@@ -629,6 +629,7 @@ void EnemyBullet::Update()
 
             BulletImpact::AtHit(previousPosition, nextPosition, m_levelScale, true,
                 [&](const Vector3& end) { return shape->IsHit(previousPosition, end, m_radius); });
+            shape->AddImpulse(nextPosition - previousPosition, 38.0f);
             shape
                 ->TakeDamage(
                     actualDamage,

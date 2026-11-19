@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "ShapeBoxRenderer.h"
 #include "ShapeBox.h"
 
@@ -50,16 +50,8 @@ void ShapeBoxRenderer::Render(RenderContext& rc)
                 return false;
             }
 
-            Vector3 renderPosition =
-                shapeBox->GetPosition();
-
-            // 図形を1.6倍にしたので、
-            // 高さ48の半分だけ上げる。
-            renderPosition.y += 24.0f;
-
-            // 回転は必ず初期化する。
-            Quaternion rotation =
-                Quaternion::Identity;
+            const Vector3 renderPosition = shapeBox->GetRenderPosition();
+            const Quaternion rotation = shapeBox->GetRotation();
 
             m_modelRender.UpdateInstancingData(
                 instanceNo,

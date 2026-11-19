@@ -1,9 +1,10 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "ShapeBox.h"
 #include "BulletImpact.h"
 #include "Player.h"
 
 #include <cmath>
+#include <random>
 
 
 namespace
@@ -46,7 +47,103 @@ namespace
 
 bool ShapeBox::Start()
 {
+    // 図形ごとに方向・速さ・回転を変え、全体が同じ動きにならないようにする。
+    static std::mt19937 random(std::random_device{}());
+    std::uniform_real_distribution<float> angle(0.0f, 6.2831853f);
+    std::uniform_real_distribution<float> speed(6.0f, 12.0f);
+    std::uniform_real_distribution<float> spin(0.08f, 0.16f);
+    std::uniform_int_distribution<int> sign(0, 1);
+    m_driftAngle = angle(random);
+    m_rotationAngle = angle(random);
+    m_driftSpeed = speed(random);
+    m_spinSpeed = spin(random) * (sign(random) ? 1.0f : -1.0f);
+    m_turnSpeed = 0.04f * (sign(random) ? 1.0f : -1.0f);
     return true;
+}
+
+Quaternion ShapeBox::GetRotation() const
+{
+    Quaternion rotation = Quaternion::Identity;
+    rotation.SetRotationDeg(Vector3::AxisY, m_rotationAngle * 57.2957795f);
+    return rotation;
+}
+
+Vector3 ShapeBox::GetRenderPosition() const
+{
+    // モデル中心がZ方向に21ずれているため、中心を軸に回すよう補正する。
+    return GetCenter() + Vector3(-21.0f * std::sin(m_rotationAngle), 0,
+        -21.0f * std::cos(m_rotationAngle));
+}
+
+Vector3 ShapeBox::ToCollisionSpace(const Vector3& point) const
+{
+    const Vector3 center = GetCenter();
+    const float x = point.x - center.x;
+    const float z = point.z - center.z;
+    const float c = std::cos(m_rotationAngle);
+    const float s = std::sin(m_rotationAngle);
+    // 点を逆回転し、既存の箱の判定をそのまま使う。
+    return Vector3(center.x + c * x - s * z, point.y,
+        center.z + s * x + c * z);
+}
+
+void ShapeBox::AddImpulse(const Vector3& direction, float strength)
+{
+    if (!IsAlive() || strength <= 0.0f) { return; }
+    const float length = std::sqrt(direction.x * direction.x + direction.z * direction.z);
+    if (length < 0.0001f) { return; }
+    m_pushVelocity += Vector3(direction.x / length, 0, direction.z / length) * strength;
+    // 連続命中しても図形が高速で飛び続けないようにする。
+    const float speed = std::sqrt(m_pushVelocity.x * m_pushVelocity.x + m_pushVelocity.z * m_pushVelocity.z);
+    if (speed > 90.0f) { m_pushVelocity *= 90.0f / speed; }
+}
+
+void ShapeBox::UpdateMotion(float deltaTime)
+{
+    if (deltaTime <= 0.0f) { return; }
+    m_driftAngle = std::fmod(m_driftAngle + m_turnSpeed * deltaTime, 6.2831853f);
+    m_rotationAngle = std::fmod(m_rotationAngle + m_spinSpeed * deltaTime, 6.2831853f);
+    Vector3 velocity(std::cos(m_driftAngle) * m_driftSpeed, 0,
+        std::sin(m_driftAngle) * m_driftSpeed);
+    // 図形同士が近づいたときは緩やかに押し合い、重なり続けるのを防ぐ。
+    QueryGOs<ShapeBox>("shapeBox", [&](ShapeBox* other)
+    {
+        if (!other || other == this || !other->IsAlive()) { return true; }
+        Vector3 away = GetCenter() - other->GetCenter();
+        const float distance = std::sqrt(away.x * away.x + away.z * away.z);
+        if (distance < 96.0f)
+        {
+            if (distance < 0.001f)
+            {
+                // 完全に重なった場合も、個別の漂流方向から離れる向きを決める。
+                away = Vector3(std::cos(m_driftAngle), 0, std::sin(m_driftAngle));
+            }
+            AddImpulse(away, (96.0f - distance) * 2.0f * deltaTime);
+        }
+        return true;
+    });
+    // 押された速度は指数減衰。積分も行い、フレームレートによる差を抑える。
+    const float decay = std::exp(-3.0f * deltaTime);
+    m_position += velocity * deltaTime + m_pushVelocity * ((1.0f - decay) / 3.0f);
+    m_pushVelocity *= decay;
+
+    // 回転時の角まで含めて、外周壁の内側に収める。
+    const Vector3 center = GetCenter();
+    constexpr float LIMIT = 1450.0f;
+    if (center.x < -LIMIT || center.x > LIMIT)
+    {
+        const bool right = center.x > LIMIT;
+        m_position.x = right ? LIMIT : -LIMIT;
+        if ((right && velocity.x > 0) || (!right && velocity.x < 0)) { m_driftAngle = 3.14159265f - m_driftAngle; }
+        if ((right && m_pushVelocity.x > 0) || (!right && m_pushVelocity.x < 0)) { m_pushVelocity.x *= -0.3f; }
+    }
+    if (center.z < -LIMIT || center.z > LIMIT)
+    {
+        const bool positiveZ = center.z > LIMIT;
+        m_position.z = (positiveZ ? LIMIT : -LIMIT) - 21.0f;
+        if ((positiveZ && velocity.z > 0) || (!positiveZ && velocity.z < 0)) { m_driftAngle = -m_driftAngle; }
+        if ((positiveZ && m_pushVelocity.z > 0) || (!positiveZ && m_pushVelocity.z < 0)) { m_pushVelocity.z *= -0.3f; }
+    }
 }
 
 
@@ -110,19 +207,21 @@ bool ShapeBox::IsHit(
     };
 
 
+    const Vector3 localStart = ToCollisionSpace(start);
+    const Vector3 localEnd = ToCollisionSpace(end);
     const float startValues[3] =
     {
-        start.x,
-        start.y,
-        start.z
+        localStart.x,
+        localStart.y,
+        localStart.z
     };
 
 
     const float movement[3] =
     {
-        end.x - start.x,
-        end.y - start.y,
-        end.z - start.z
+        localEnd.x - localStart.x,
+        localEnd.y - localStart.y,
+        localEnd.z - localStart.z
     };
 
 
@@ -240,6 +339,7 @@ void ShapeBox::TakeDamage(
     {
         BulletImpact::EmitDestruction(m_position + Vector3(0, 24, 21), 1.0f,
             Vector4(0.98f, 0.81f, 0.30f, 1));
+        m_pushVelocity = Vector3::Zero;
         // 5秒後に復活。
         m_respawnTimer =
             5.0f;
@@ -279,6 +379,7 @@ void ShapeBox::Update()
 {
     if (m_hp > 0)
     {
+        UpdateMotion(g_gameTime->GetFrameDeltaTime());
         return;
     }
 
@@ -348,11 +449,12 @@ bool ShapeBox::IsTouch(
     };
 
 
+    const Vector3 localCenter = ToCollisionSpace(center);
     const float values[3] =
     {
-        center.x,
-        center.y,
-        center.z
+        localCenter.x,
+        localCenter.y,
+        localCenter.z
     };
 
 
