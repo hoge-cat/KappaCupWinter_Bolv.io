@@ -43,7 +43,7 @@ void SettingsUI::Start()
         BolvUI::Rect(m_fills[i], SLIDER_WIDTH, 12, 150, ROW_Y[i], Vector4(0.08f,0.73f,0.93f,1));
         BolvUI::Rect(m_knobs[i], 20, 32, 150, ROW_Y[i], Vector4(0.85f,0.96f,1,1));
     }
-    BolvUI::Center(m_hint, L"上下・W/S：選択　左右・A/D：調整　Enter：決定　Esc：閉じる", 0, -360, 0.40f);
+    BolvUI::Center(m_hint, L"上下・W/S：選択　左右・A/D：調整　Enter：決定　Esc：閉じる　F11：画面切替", 0, -360, 0.40f);
     BolvUI::Center(m_notice, L"", 0, -225, 0.43f);
     Refresh();
 }

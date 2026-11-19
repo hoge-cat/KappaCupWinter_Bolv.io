@@ -12,6 +12,56 @@ namespace
 {
     bool isFullscreen = true;
     RECT windowedRect = {};
+    bool windowedMaximized = false;
+}
+
+namespace
+{
+    bool GetWindowFrame(HWND window, int& width, int& height)
+    {
+        RECT frame = {};
+        if (!AdjustWindowRectEx(&frame,
+            static_cast<DWORD>(GetWindowLongPtrW(window, GWL_STYLE)), FALSE, 0)) { return false; }
+        width = frame.right - frame.left;
+        height = frame.bottom - frame.top;
+        return true;
+    }
+    void ConstrainWindowAspect(HWND window, RECT& rect, UINT edge)
+    {
+        int frameWidth, frameHeight;
+        if (!GetWindowFrame(window, frameWidth, frameHeight)) { return; }
+        int width = rect.right - rect.left - frameWidth;
+        int height = rect.bottom - rect.top - frameHeight;
+        bool useHeight = edge == WMSZ_TOP || edge == WMSZ_BOTTOM;
+        if (edge != WMSZ_LEFT && edge != WMSZ_RIGHT && !useHeight)
+        {
+            RECT old;
+            if (GetWindowRect(window, &old))
+            {
+                const int deltaWidth = width - (old.right - old.left - frameWidth);
+                const int deltaHeight = height - (old.bottom - old.top - frameHeight);
+                const long long dx = deltaWidth < 0 ? -static_cast<long long>(deltaWidth) : deltaWidth;
+                const long long dy = deltaHeight < 0 ? -static_cast<long long>(deltaHeight) : deltaHeight;
+                useHeight = dy * 16 > dx * 9;
+            }
+        }
+        if (useHeight)
+        {
+            if (height < 360) { height = 360; }
+            width = static_cast<int>((static_cast<long long>(height) * 16 + 4) / 9);
+        }
+        else
+        {
+            if (width < 640) { width = 640; }
+            height = static_cast<int>((static_cast<long long>(width) * 9 + 8) / 16);
+        }
+        const bool left = edge == WMSZ_LEFT || edge == WMSZ_TOPLEFT || edge == WMSZ_BOTTOMLEFT;
+        const bool top = edge == WMSZ_TOP || edge == WMSZ_TOPLEFT || edge == WMSZ_TOPRIGHT;
+        if (left) { rect.left = rect.right - width - frameWidth; }
+        else { rect.right = rect.left + width + frameWidth; }
+        if (top) { rect.top = rect.bottom - height - frameHeight; }
+        else { rect.bottom = rect.top + height + frameHeight; }
+    }
 }
 bool IsGameFullscreen() { return isFullscreen; }
 bool SetGameFullscreen(bool fullscreen)
@@ -22,7 +72,7 @@ bool SetGameFullscreen(bool fullscreen)
     RECT oldRect;
     if (!GetWindowRect(g_hWnd, &oldRect)) { return false; }
     const LONG_PTR oldStyle = GetWindowLongPtrW(g_hWnd, GWL_STYLE);
-    constexpr LONG_PTR WINDOW_STYLE = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX;
+    constexpr LONG_PTR WINDOW_STYLE = WS_OVERLAPPEDWINDOW;
     RECT target = monitor.rcMonitor;
     const LONG_PTR style = (fullscreen ? WS_POPUP : WINDOW_STYLE) | (oldStyle & WS_VISIBLE);
     if (!fullscreen)
@@ -61,17 +111,39 @@ bool SetGameFullscreen(bool fullscreen)
             target = { x, y, x + width, y + height };
         }
     }
+    const bool wasMaximized = !isFullscreen && IsZoomed(g_hWnd);
+    RECT normalRect = oldRect;
+    if (fullscreen && wasMaximized)
+    {
+        // Capture the normal window rectangle before removing its frame.
+        ShowWindow(g_hWnd, SW_RESTORE);
+        if (!GetWindowRect(g_hWnd, &normalRect))
+        {
+            ShowWindow(g_hWnd, SW_MAXIMIZE);
+            return false;
+        }
+    }
     SetLastError(0);
-    if (!SetWindowLongPtrW(g_hWnd, GWL_STYLE, style) && GetLastError() != 0) { return false; }
+    if (!SetWindowLongPtrW(g_hWnd, GWL_STYLE, style) && GetLastError() != 0)
+    {
+        if (wasMaximized) { ShowWindow(g_hWnd, SW_MAXIMIZE); }
+        return false;
+    }
     if (!SetWindowPos(g_hWnd, HWND_NOTOPMOST, target.left, target.top,
         target.right - target.left, target.bottom - target.top, SWP_FRAMECHANGED | SWP_NOACTIVATE))
     {
         SetWindowLongPtrW(g_hWnd, GWL_STYLE, oldStyle);
         SetWindowPos(g_hWnd, nullptr, oldRect.left, oldRect.top, oldRect.right - oldRect.left,
             oldRect.bottom - oldRect.top, SWP_FRAMECHANGED | SWP_NOZORDER | SWP_NOACTIVATE);
+        if (wasMaximized) { ShowWindow(g_hWnd, SW_MAXIMIZE); }
         return false;
     }
-    if (fullscreen && !isFullscreen) { windowedRect = oldRect; }
+    if (fullscreen && !isFullscreen)
+    {
+        windowedRect = normalRect;
+        windowedMaximized = wasMaximized;
+    }
+    if (!fullscreen && windowedMaximized) { ShowWindow(g_hWnd, SW_MAXIMIZE); }
     isFullscreen = fullscreen;
     ClipCursor(nullptr);
     return true;
@@ -95,6 +167,66 @@ LRESULT CALLBACK MsgProc(
     PlayerUpgradeUI::HandleWindowMessage(msg, wParam, lParam);
     switch (msg)
     {
+    case WM_KEYDOWN:
+    case WM_SYSKEYDOWN:
+        if (wParam == VK_F11)
+        {
+            // Bit 30 is set for repeated key-down messages while the key is held.
+            if ((lParam & (static_cast<LPARAM>(1) << 30)) == 0)
+            {
+                if (GameSettings::SetFullscreen(!IsGameFullscreen())) { GameSettings::Save(); }
+            }
+            return 0;
+        }
+        return DefWindowProc(hWnd, msg, wParam, lParam);
+
+    case WM_SIZING:
+        if (!IsGameFullscreen())
+        {
+            ConstrainWindowAspect(hWnd, *reinterpret_cast<RECT*>(lParam), static_cast<UINT>(wParam));
+            return TRUE;
+        }
+        return DefWindowProc(hWnd, msg, wParam, lParam);
+
+    case WM_GETMINMAXINFO:
+        if (!IsGameFullscreen())
+        {
+            RECT minimum = { 0, 0, 640, 360 };
+            if (AdjustWindowRectEx(&minimum,
+                static_cast<DWORD>(GetWindowLongPtrW(hWnd, GWL_STYLE)), FALSE, 0))
+            {
+                auto* info = reinterpret_cast<MINMAXINFO*>(lParam);
+                info->ptMinTrackSize.x = minimum.right - minimum.left;
+                info->ptMinTrackSize.y = minimum.bottom - minimum.top;
+                MONITORINFO monitor = { sizeof(MONITORINFO) };
+                if (GetMonitorInfoW(MonitorFromWindow(hWnd, MONITOR_DEFAULTTONEAREST), &monitor))
+                {
+                    const int frameWidth = minimum.right - minimum.left - 640;
+                    const int frameHeight = minimum.bottom - minimum.top - 360;
+                    int width = monitor.rcWork.right - monitor.rcWork.left - frameWidth;
+                    int height = monitor.rcWork.bottom - monitor.rcWork.top - frameHeight;
+                    if (static_cast<long long>(width) * 9 > static_cast<long long>(height) * 16)
+                    {
+                        width = height * 16 / 9;
+                    }
+                    else { height = width * 9 / 16; }
+                    info->ptMaxSize = { width + frameWidth, height + frameHeight };
+                    info->ptMaxPosition = {
+                        monitor.rcWork.left - monitor.rcMonitor.left +
+                            (monitor.rcWork.right - monitor.rcWork.left - info->ptMaxSize.x) / 2,
+                        monitor.rcWork.top - monitor.rcMonitor.top +
+                            (monitor.rcWork.bottom - monitor.rcWork.top - info->ptMaxSize.y) / 2
+                    };
+                }
+            }
+            return 0;
+        }
+        return DefWindowProc(hWnd, msg, wParam, lParam);
+
+    case WM_ENTERSIZEMOVE:
+        ClipCursor(nullptr);
+        return 0;
+
     case WM_DESTROY:
         PostQuitMessage(0);
         break;
